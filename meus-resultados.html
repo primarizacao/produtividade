@@ -119,6 +119,16 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
 .load{display:flex;align-items:center;justify-content:center;gap:10px;}
 .spin{width:20px;height:20px;border-radius:50%;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;animation:sp .8s linear infinite;}
 @keyframes sp{to{transform:rotate(360deg);}}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:color-mix(in srgb, var(--s1) 92%, transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--bd2);}
+.tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border:0;background:none;color:var(--tx3);font-size:11px;font-weight:600;border-radius:12px;cursor:pointer;}
+.tabs button.on{color:var(--or);background:rgba(255,90,31,.12);}
+.tabs svg{width:22px;height:22px;}
+.wrap.app{padding-bottom:calc(96px + env(safe-area-inset-bottom));}
+@media (min-width:700px){ .tabs{position:sticky;top:0;bottom:auto;max-width:560px;margin:0 auto 16px;border:1px solid var(--bd2);border-radius:16px;} .wrap.app{padding-bottom:40px;} }
+.dtab{width:100%;border-collapse:collapse;font-size:13px;}
+.dtab th{text-align:left;font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--tx3);padding:0 6px 8px;}
+.dtab td{padding:9px 6px;border-top:1px solid var(--bd);color:var(--tx2);font-variant-numeric:tabular-nums;}
+.dtab td b{color:var(--tx);} .dtab td.bad{color:var(--or);font-weight:700;}
 .vz{text-align:center;padding:30px 10px;color:var(--tx3);font-size:14px;}
 </style>
 </head>
@@ -131,13 +141,17 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
   var SUPA_URL = "https://hdjcuviqlzcpscgehufp.supabase.co";
   var SUPA_KEY = "sb_publishable_aerEOTzn00D38NOA0KtIuA_2YmZ1zOE";
 
-  var app = document.getElementById("app"), D = null, MI = 0;
+  var app = document.getElementById("app"), D = null, MI = 0, TAB = "resumo";
   var IC = {
     logo:'<path d="M3.6 12h3.6l2-5.4 3.4 10.8 2.2-5.4h5.6"/>',
     lock:'<rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.5 10.5V7.8a3.5 3.5 0 0 1 7 0v2.7"/>',
     sol:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
     lua:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>',
     sair:'<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4M6 12h10"/>',
+    home:'<rect x="3.5" y="3.5" width="7" height="8" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="5" rx="1.6"/><rect x="13.5" y="11.5" width="7" height="9" rx="1.6"/><rect x="3.5" y="14.5" width="7" height="6" rx="1.6"/>',
+    dia:'<rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+    rel:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    lista:'<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>',
     ok:'<path d="m5 12.5 4.5 4.5L19 7.5"/>', alvo:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/>'
   };
   function ic(n, extra){ return '<svg class="i" viewBox="0 0 24 24" '+(extra||"")+'>'+IC[n]+'</svg>'; }
@@ -159,18 +173,19 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
 
   /* ---------- tela do código ---------- */
   function telaCodigo(msg){
+    app.className = "wrap";
     app.innerHTML = '<div class="login">'
       + '<div class="logo">'+ic("logo")+'</div>'
-      + '<div><h1>Meus resultados</h1><p>Digite o código que você recebeu para acompanhar sua produtividade, suas OS e seus horários.</p></div>'
-      + '<form class="cod" id="f" autocomplete="off"><input id="c" inputmode="text" autocapitalize="characters" maxlength="7" placeholder="ABC-123" aria-label="Código">'
+      + '<div><h1>Meus resultados</h1><p>Digite a chave que você recebeu do seu líder para acompanhar sua produtividade, suas OS e seus horários.</p></div>'
+      + '<form class="cod" id="f" autocomplete="off"><input id="c" inputmode="text" autocapitalize="characters" maxlength="7" placeholder="ABC-123" aria-label="Chave">'
       + '<label class="lembrar"><input type="checkbox" id="lb" checked> Lembrar neste celular</label>'
       + '<button class="btn" id="b" type="submit">Ver meus números</button><div class="erro" id="er">'+esc(msg||"")+'</div></form>'
-      + '<div class="priv">'+ic("lock")+'<span>Só você vê estes números. Não compartilhe seu código. Se perdeu, peça um novo ao seu líder.</span></div>'
+      + '<div class="priv">'+ic("lock")+'<span>Só você vê estes números. Não compartilhe sua chave. Se perdeu, peça uma nova ao seu líder.</span></div>'
     + '</div>';
     var c = document.getElementById("c");
     c.addEventListener("input", function(){ var v = c.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6); c.value = v.length>3 ? v.slice(0,3)+"-"+v.slice(3) : v; });
     document.getElementById("f").onsubmit = function(e){
-      e.preventDefault(); var v = c.value.replace(/[^A-Z0-9]/gi,""); if (v.length<6){ document.getElementById("er").textContent = "O código tem 6 caracteres."; return; }
+      e.preventDefault(); var v = c.value.replace(/[^A-Z0-9]/gi,""); if (v.length<6){ document.getElementById("er").textContent = "A chave tem 6 caracteres."; return; }
       entrar(v, document.getElementById("lb").checked);
     };
     setTimeout(function(){ c.focus(); }, 200);
@@ -178,7 +193,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
   function entrar(cod, lembrar){
     var b = document.getElementById("b"); if (b){ b.disabled = true; b.innerHTML = '<span class="load"><span class="spin"></span>Buscando…</span>'; }
     consulta(cod).then(function(r){
-      if (!r){ try { localStorage.removeItem("mr_cod"); } catch(e){} telaCodigo("Código não encontrado. Confira e tente de novo."); return; }
+      if (!r){ try { localStorage.removeItem("mr_cod"); } catch(e){} telaCodigo("Chave não encontrada. Confira e tente de novo."); return; }
       try { if (lembrar) localStorage.setItem("mr_cod", cod); } catch(e){}
       D = r; MI = Math.max(0, (D.dados.meses||[]).length-1); render();
     }).catch(function(err){ telaCodigo(err.message); });
@@ -236,7 +251,10 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
     var h = '<div class="top"><div class="av">'+esc(ini)+'</div><div class="sp"><h2>Olá, '+esc(pri)+'</h2><span>'+esc(D.base||"")+(at ? (D.base ? ' · ' : '')+'atualizado em '+at.toLocaleDateString("pt-BR")+' '+at.toTimeString().slice(0,5) : '')+'</span></div>'
       + '<button class="ib" id="tm" aria-label="Trocar tema">'+ic(tema()==="light"?"lua":"sol")+'</button></div>';
     if (!m){ app.innerHTML = h + '<div class="card vz">Ainda não há resultados publicados para você.</div>' + rodape(); liga(); return; }
+    var tabs = [["resumo","Resumo","home"],["dias","Dia a dia","dia"],["horarios","Horários","rel"],["os","Minhas OS","lista"]];
+    var barra = '<nav class="tabs">'+tabs.map(function(t){ return '<button data-t="'+t[0]+'" class="'+(TAB===t[0]?"on":"")+'">'+ic(t[2])+t[1]+'</button>'; }).join("")+'</nav>';
     h += '<div class="meses">'+meses.map(function(x, i){ return '<button data-m="'+i+'" class="'+(i===MI?"on":"")+'">'+esc(x.rotulo)+'</button>'; }).join("")+'</div>';
+    var pre = h; h = "";
     var ok = m.pct >= meta, falta = meta - m.pct;
     var precisa = (!ok && m.os) ? Math.ceil((meta*m.os - m.prod)/(1-meta)) : 0;
     h += '<div class="card hero">'+ring(m.pct, meta)+'<div class="tx"><span class="st '+(ok?"ok":"no")+'">'+ic(ok?"ok":"alvo",'style="width:14px;height:14px"')+(ok?"Meta batida":"Meta: "+Math.round(meta*100)+"%")+'</span>'
@@ -252,7 +270,9 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
       + [["Você", m.pct, "#ff5a1f"],["Sua base", m.basePct, "var(--np)"],["Todas as bases", m.equipePct, "rgba(var(--ink),.35)"]].map(function(r){
           return '<div class="row"><span>'+r[0]+'</span><div class="bar"><i style="width:'+Math.min(100,(r[1]||0)*100).toFixed(1)+'%;background:'+r[2]+'"></i><u style="left:'+(meta*100)+'%"></u></div><b>'+pct(r[1])+'</b></div>';
         }).join("")+'</div></div>';
+    var sResumo = h; h = "";
     h += '<div class="card"><h3>Execuções por dia</h3><div class="sub">'+esc(m.rotulo)+'</div><div class="chart">'+barrasDia(m.serie)+'</div><div class="leg"><span><i style="background:#ff5a1f"></i>Produtivas</span><span><i style="background:var(--np)"></i>Não produtivas</span></div></div>';
+    var sDias = h; h = "";
     var jan = dd.janela || { ini:"09:00", fim:"15:00" }, iniF = toF(jan.ini), fimF = toF(jan.fim);
     h += '<div class="card"><h3>Meus horários</h3><div class="sub">média do mês · janela esperada '+esc(jan.ini)+' – '+esc(jan.fim)+'</div><div class="hr">'
       + '<div><span>1ª execução</span><b class="'+(m.prim!=null && m.prim>iniF?"bad":"")+'">'+hh(m.prim)+'</b></div>'
@@ -260,19 +280,31 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
       + '<div><span>Jornada</span><b>'+(m.prim!=null && m.ult!=null ? hh(m.ult-m.prim) : "—")+'</b></div></div>'
       + (m.alertas ? '<div class="al">'+(m.alertas.tarde+m.alertas.cedo+m.alertas.ambos ? (m.alertas.tarde ? '<span class="t">'+m.alertas.tarde+'× começou depois de '+esc(jan.ini)+'</span>' : '')+(m.alertas.cedo ? '<span class="c">'+m.alertas.cedo+'× terminou antes de '+esc(jan.fim)+'</span>' : '')+(m.alertas.ambos ? '<span class="a">'+m.alertas.ambos+'× os dois no mesmo dia</span>' : '') : '<span class="o">Todos os dias dentro da janela</span>')+'</div>' : '')
     + '</div>';
+    if (m.os_lista && m.os_lista.length){
+      var pd = {}; m.os_lista.forEach(function(o){ var x = pd[o[0]] || (pd[o[0]] = { p:o[1], u:o[1], n:0, pr:0 }); if (o[1] < x.p) x.p = o[1]; if (o[1] > x.u) x.u = o[1]; x.n++; if (o[5]) x.pr++; });
+      var dk = Object.keys(pd).sort().reverse();
+      h += '<div class="card"><h3>Dia a dia</h3><div class="sub">1ª e última execução de cada dia</div><table class="dtab"><thead><tr><th>Dia</th><th>1ª</th><th>Última</th><th>OS</th></tr></thead><tbody>'
+        + dk.map(function(d){ var x = pd[d]; return '<tr><td><b>'+dBR(d)+'</b> '+dow(d)+'</td><td class="'+(toF(x.p)>iniF?"bad":"")+'">'+esc(x.p)+'</td><td class="'+(toF(x.u)<fimF?"bad":"")+'">'+esc(x.u)+'</td><td>'+x.n+' <span style="color:var(--tx3)">('+x.pr+' prod.)</span></td></tr>'; }).join("")
+        + '</tbody></table></div>';
+    }
+    var sHor = h; h = "";
     if (m.resultados && m.resultados.length){
       var mxr = m.resultados[0][1];
       h += '<div class="card"><h3>Resultados das minhas OS</h3><div class="sub">laranja = produtivo</div><div class="lst">'+m.resultados.slice(0,8).map(function(r){
         return '<div class="it"><span>'+esc(r[0])+'</span><b>'+num(r[1])+' <small style="color:var(--tx3);font-weight:500">'+pct(m.os ? r[1]/m.os : 0)+'</small></b><div class="bar"><i style="width:'+(r[1]/mxr*100).toFixed(1)+'%;background:'+(r[2]?"#ff5a1f":"var(--np)")+'"></i></div></div>';
       }).join("")+'</div></div>';
     }
+    sDias += h; h = "";
     var ev = evolucao(meses, meta);
-    if (ev) h += '<div class="card"><h3>Evolução</h3><div class="sub">% produtiva mês a mês</div><div class="chart">'+ev+'</div></div>';
+    if (ev) sResumo += '<div class="card"><h3>Evolução</h3><div class="sub">% produtiva mês a mês</div><div class="chart">'+ev+'</div></div>';
     if (m.os_lista && m.os_lista.length){
       h += '<div class="card"><h3>Minhas OS</h3><div class="sub">'+num(m.os_lista.length)+' OS em '+esc(m.rotulo)+'</div><input class="busca" id="bs" placeholder="Buscar nº da OS, tipo ou resultado"><div id="osl"></div></div>';
     }
-    app.innerHTML = h + rodape();
-    if (m.os_lista && m.os_lista.length) listaOS(m.os_lista, "");
+    var sOS = h || '<div class="card vz">A lista de OS vem só dos 2 meses mais recentes.</div>';
+    var corpo = { resumo:sResumo, dias:sDias, horarios:sHor, os:sOS }[TAB];
+    app.className = "wrap app";
+    app.innerHTML = pre + corpo + (TAB==="resumo" ? rodape() : '') + barra;
+    if (TAB==="os" && m.os_lista && m.os_lista.length) listaOS(m.os_lista, "");
     liga();
   }
   function toF(s){ var p = String(s||"").split(":"); return ((+p[0]||0)*60 + (+p[1]||0))/1440; }
@@ -293,6 +325,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
     var s = document.getElementById("sa"); if (s) s.onclick = function(){ try { localStorage.removeItem("mr_cod"); } catch(e){} D = null; telaCodigo(); };
     var on = document.querySelector(".meses .on"); if (on && on.scrollIntoView) on.scrollIntoView({ inline:"center", block:"nearest" });
     document.querySelectorAll(".meses [data-m]").forEach(function(b){ b.onclick = function(){ MI = +b.dataset.m; render(); window.scrollTo({ top:0, behavior:"smooth" }); }; });
+    document.querySelectorAll(".tabs [data-t]").forEach(function(b){ b.onclick = function(){ TAB = b.dataset.t; render(); window.scrollTo(0,0); }; });
     var bs = document.getElementById("bs"); if (bs){ var m = D.dados.meses[MI]; bs.oninput = function(){ listaOS(m.os_lista, bs.value.trim()); }; }
   }
 

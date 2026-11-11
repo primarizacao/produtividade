@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;800&family=Public+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <!-- A biblioteca de leitura de Excel (xlsx) agora é carregada só quando for importar planilhas -->
+<script>(function(){var m=location.hash.match(/[#&]c=([A-Za-z0-9-]{6,7})/);if(m){location.replace(location.href.split("#")[0].split("?")[0].replace(/[^\/]*$/,"")+"meus-resultados.html#c="+m[1]);}})();</script>
 <script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("tema")==="light"?"light":"dark");}catch(e){document.documentElement.setAttribute("data-theme","dark");}</script>
 <style>
 :root{
@@ -1555,7 +1556,9 @@ select, .btn, input[type="text"], input[type="search"], input[type="number"], in
 select{background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path d="M1.5 2.5L6 6.5l4.5-4" fill="none" stroke="%23888" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>') !important;background-repeat:no-repeat !important;background-position:right 10px center !important;padding-right:30px !important;}
 select option, select optgroup{background:var(--surface-2);color:var(--text-primary);}
 input::placeholder, textarea::placeholder{color:var(--text-muted);}
-:root:not([data-theme="light"]) input[type="date"]::-webkit-calendar-picker-indicator, :root:not([data-theme="light"]) input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.55);}
+input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator{filter:none;opacity:.75;cursor:pointer;}
+:root:not([data-theme="light"]) input[type="date"], :root:not([data-theme="light"]) input[type="time"]{color-scheme:dark;}
+:root[data-theme="light"] input[type="date"], :root[data-theme="light"] input[type="time"]{color-scheme:light;}
 .btn{font-weight:600;box-shadow:none;}
 .btn:hover{background-color:var(--surface-2);border-color:rgba(var(--ink),.24);}
 .btn-primary, .btn.btn-primary{background:var(--brand-grad) !important;border-color:transparent !important;color:#fff !important;box-shadow:var(--shadow-brand);}
@@ -2195,6 +2198,16 @@ body.pres-on{overflow:hidden;}
 .pda-r2 .w{display:flex;align-items:center;gap:5px;justify-content:flex-end;font-weight:600;color:var(--good);white-space:nowrap;overflow:hidden;} .pda-r2 .w em{font-style:normal;font-weight:500;color:var(--text-muted);}
 .pda-r2.atr .h{color:var(--good);}
 @media (max-width:900px){ .pda-r2{grid-template-columns:20px 44px 1fr auto;} .pda-r2 .t, .pda-r2 .e, .pda-r2 .res{display:none;} .pda-sel{position:static;} .pda-bar2{top:0;} }
+.pda-r2 .o{grid-column:3 / -1;display:flex;gap:6px;align-items:flex-start;font-size:12px;line-height:1.45;color:var(--text-secondary);background:rgba(var(--ink),.035);border-radius:8px;padding:6px 9px;margin-top:-2px;}
+.pda-r2 .o svg{flex:none;margin-top:2px;stroke:var(--text-muted);}
+.pda-r2 .o mark{background:rgba(255,90,31,.22);color:var(--text-primary);border-radius:3px;padding:0 2px;}
+.pda-sug{height:26px;padding:0 10px;border-radius:8px;border:1px dashed var(--brand);background:var(--brand-soft-2);color:var(--brand);font:700 11.5px/1 inherit;font-family:inherit;cursor:pointer;white-space:nowrap;}
+.pda-sug:hover{background:var(--brand);color:#fff;}
+.pda-sugall{border-color:var(--brand) !important;color:var(--brand) !important;}
+@media (max-width:900px){ .pda-r2 .o{grid-column:2 / -1;} }
+.pda-sugall{order:5;width:100%;justify-content:center;}
+.pda-fl .search-input-wrap input{width:250px;}
+@media (max-width:640px){ .pda-fl .search-input-wrap, .pda-fl .search-input-wrap input{width:100%;} }
 /* ===================== CELULAR ===================== */
 .tb-datas{display:none;}
 @media (max-width:640px){
@@ -2325,6 +2338,20 @@ body.pres-on{overflow:hidden;}
 @media (max-width:1100px){ .ac-ks{grid-template-columns:repeat(3,minmax(0,1fr));} .ac-cfgb{grid-template-columns:1fr;} }
 @media (max-width:640px){ .ac-ks{grid-template-columns:repeat(2,minmax(0,1fr));} .ac-k b{font-size:22px;} .ac-tool .search-input-wrap{flex:1;} .ac-tool .search-input-wrap input{width:100%;} .ac-tool .sp{display:none;} .ac-acts{width:100%;justify-content:flex-end;} .ac-t{order:4;} .ac-ver{width:64px;} .ac-qri{width:200px;height:200px;} .ac-qri svg{width:200px;height:200px;} }
 .ac-def input{background:var(--surface-2) !important;border:1px solid var(--border-strong) !important;color:var(--text-primary) !important;border-radius:10px;padding:0 10px;}
+.ac-key em{font-style:normal;text-transform:none;letter-spacing:0;font-weight:500;color:rgba(255,255,255,.4);}
+.ac-lemb{display:flex;align-items:center;gap:7px;font-size:11.5px;color:rgba(255,255,255,.6);margin-top:-2px;} .ac-lemb input{accent-color:#ff5a1f;}
+.ac-novo{display:flex;gap:8px;margin-top:16px;max-width:520px;}
+.ac-novo input{flex:1;min-width:0;height:44px;border-radius:12px;padding:0 14px;background:rgba(255,255,255,.08) !important;border:1px solid rgba(255,255,255,.16) !important;color:#fff !important;font-size:14px;}
+.ac-novo input::placeholder{color:rgba(255,255,255,.45);} .ac-novo .btn{height:44px;}
+.ch-m{width:min(440px,100%);}
+.ch-cod{margin:14px 0 6px;} .ch-cod code{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:38px;font-weight:800;letter-spacing:.14em;color:var(--brand);padding:8px 20px;border-radius:16px;background:var(--brand-soft);}
+.ch-st{display:flex;align-items:center;justify-content:center;gap:7px;min-height:22px;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:8px;}
+.ch-st.ok{color:var(--good);} .ch-st.ok svg{stroke:var(--good);} .ch-st.warn{color:#c98408;} .ch-st.warn svg{stroke:#c98408;}
+.spin2{width:14px;height:14px;border-radius:50%;border:2px solid var(--border-strong);border-top-color:var(--brand);animation:acGira .8s linear infinite;}
+.ch-pass{text-align:left;font-size:12.5px;line-height:1.55;color:var(--text-secondary);margin:6px 0 12px;padding-left:20px;} .ch-pass b{color:var(--text-primary);word-break:break-all;}
+.ac-qri.sm{width:150px;height:150px;margin:8px auto 14px;} .ac-qri.sm svg{width:150px;height:150px;}
+@media (max-width:640px){ .ac-novo{flex-direction:column;} .ch-cod code{font-size:30px;} }
+.ch-m .btn{text-decoration:none;}
 /* ===== Nuvem ===== */
 .tb-nuvem{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--border-strong);background:var(--surface-1);color:var(--text-secondary);font:600 12.5px/1 inherit;font-family:inherit;cursor:pointer;order:1;white-space:nowrap;}
 .tb-nuvem svg{width:16px;height:16px;}
@@ -2352,6 +2379,9 @@ body.pres-on{overflow:hidden;}
 .nv-sair{align-self:flex-start;}
 .nv-n{font-style:normal;font-size:11.5px;color:var(--text-muted);} .nv-n code{font-size:11px;background:rgba(var(--ink),.06);padding:1px 5px;border-radius:5px;}
 @media (max-width:640px){ .tb-nuvem span{display:none;} .tb-nuvem{padding:0 11px;} }
+.nv-colab{display:flex;align-items:center;gap:12px;margin:14px 0 4px;padding:12px 14px;border-radius:14px;border:1px solid var(--border-strong);background:var(--surface-2);text-decoration:none;color:var(--text-primary);}
+.nv-colab:hover{border-color:var(--brand);} .nv-colab svg{stroke:var(--brand);width:20px;height:20px;}
+.nv-colab span{flex:1;display:flex;flex-direction:column;gap:2px;} .nv-colab b{font-size:13.5px;} .nv-colab em{font-style:normal;font-size:12px;color:var(--text-muted);} .nv-colab i{font-style:normal;font-size:18px;color:var(--text-muted);}
 /* ===== Colaboradores ===== */
 .co-top{display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap;}
 .co-k{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;flex:1;min-width:280px;}
@@ -2401,6 +2431,20 @@ body.pres-on{overflow:hidden;}
 }
 .pv-hero #pfVoltar{display:none;}
 .pv-hero .pv-bar{justify-content:flex-end;}
+.co-k b small{font-size:15px;color:var(--text-muted);font-weight:600;}
+.co-c{cursor:default;text-align:left;}
+.co-d{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin:14px 0 12px;}
+.co-d span{display:block;font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted);}
+.co-d b{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.co-d b em{font-style:normal;font-weight:500;color:var(--text-muted);} .co-d b svg{stroke:var(--brand);}
+.co-f2{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding-top:12px;border-top:1px solid var(--border);}
+.co-p{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:8px;font:600 11.5px/1 inherit;font-family:inherit;background:rgba(var(--ink),.06);color:var(--text-muted);border:0;}
+.co-p.ok{background:rgba(48,164,108,.13);color:var(--good);} .co-p.ok svg{stroke:var(--good);}
+.co-p.ch{background:var(--brand-soft);color:var(--brand);font-family:ui-monospace,Menlo,monospace;letter-spacing:.06em;} .co-p.ch svg{stroke:var(--brand);}
+.co-p.gera{cursor:pointer;border:1px dashed var(--border-strong);background:transparent;color:var(--text-secondary);} .co-p.gera:hover{border-color:var(--brand);color:var(--brand);}
+.co-perf{margin-left:auto;height:28px;padding:0 12px;border-radius:9px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text-primary);font:600 12px/1 inherit;font-family:inherit;cursor:pointer;}
+.co-perf:hover{border-color:var(--brand);color:var(--brand);}
+.co-code{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--brand);letter-spacing:.06em;}
 .bnav{display:none;}
 @media (max-width:640px){
   .bnav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:90;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:color-mix(in srgb, var(--surface-1) 92%, transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--border-strong);}
@@ -2449,7 +2493,7 @@ body.pres-on{overflow:hidden;}
     <div class="nav-group-label">Dados</div>
     <button class="nav-item" data-page="colaboradores"><span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.4" y="5" width="17.2" height="14" rx="2"/><circle cx="9" cy="11" r="2.1"/><path d="M5.6 16.4a3.6 3.6 0 0 1 6.8 0"/><path d="M15 10h3.4"/><path d="M15 13.6h3.4"/></svg></span>Colaboradores</button>
     <button class="nav-item" data-page="nomes"><span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8.5" r="3"/><path d="M3 18.5c.6-2.8 2.6-4.3 5-4.3s4.4 1.5 5 4.3"/><path d="M14.5 9.5h6M14.5 13h6M17.5 16.5h3"/></svg></span>Nomes &amp; PDA</button>
-    <button class="nav-item" data-page="acesso"><span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M10.5 18.5h3"/><circle cx="12" cy="10" r="2.2"/><path d="M9 14.6c.6-1.3 1.7-2 3-2s2.4.7 3 2"/></svg></span>Acesso dos colaboradores</button>
+    <button class="nav-item" data-page="acesso"><span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M10.5 18.5h3"/><circle cx="12" cy="10" r="2.2"/><path d="M9 14.6c.6-1.3 1.7-2 3-2s2.4.7 3 2"/></svg></span>Chaves de acesso</button>
     <button class="nav-item" data-page="importar"><span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6v10.2"/><path d="M8.2 10.4 12 14.2l3.8-3.8"/><path d="M4.2 16.4v2.2a1.8 1.8 0 0 0 1.8 1.8h12a1.8 1.8 0 0 0 1.8-1.8v-2.2"/></svg></span>Importar Planilhas</button>
 
     <div class="nav-group-label">Sistema</div>
@@ -3039,11 +3083,11 @@ function persistNewBanco(rows){
   return idbBulkAdd("banco", toChunks(rows, serializeBanco));
 }
 function serializeRecord(r){
-  return { u:r.unidade, o:r.numOS, t:r.tipo||"", la:r.lat, lo:r.lng, ga:r.geoAprox?1:0, en:r.endereco||"", r:r.resultado, c:r.classificacao, e:(r._orig!==undefined ? r._orig : r.equipe), a:r.area,
+  return { u:r.unidade, o:r.numOS, t:r.tipo||"", la:r.lat, lo:r.lng, ga:r.geoAprox?1:0, en:r.endereco||"", ob:r.obs||"", r:r.resultado, c:r.classificacao, e:(r._orig!==undefined ? r._orig : r.equipe), a:r.area,
     di: r.dataInicio? r.dataInicio.getTime():null, df: r.dataFim? r.dataFim.getTime():null, an:r.ano, me:r.mes };
 }
 function deserializeRecord(o){
-  return { unidade:o.u, numOS:o.o, tipo:o.t||"", lat:o.la!=null?o.la:null, lng:o.lo!=null?o.lo:null, geoAprox:o.ga?1:0, endereco:o.en||"", resultado:o.r, classificacao:o.c, equipe:o.e, area:o.a,
+  return { unidade:o.u, numOS:o.o, tipo:o.t||"", lat:o.la!=null?o.la:null, lng:o.lo!=null?o.lo:null, geoAprox:o.ga?1:0, endereco:o.en||"", obs:o.ob||"", resultado:o.r, classificacao:o.c, equipe:o.e, area:o.a,
     dataInicio: o.di!=null? new Date(o.di):null, dataFim: o.df!=null? new Date(o.df):null, ano:o.an, mes:o.me };
 }
 function serializeBanco(b){ return { n:(b._orig!==undefined ? b._orig : b.equipe), a:b.area, d:b.day, an:b.ano, me:b.mes, p:b.prim, u:b.ult }; }
@@ -3067,6 +3111,7 @@ function buildRecord(row){
     lat: row.lat!=null ? row.lat : null,
     lng: row.lng!=null ? row.lng : null,
     endereco: row.endereco ? String(row.endereco).replace(/\s+/g," ").trim() : "",
+    obs: row.obs ? String(row.obs).replace(/\s+/g," ").trim().slice(0, 600) : "",
     resultado: row.resultado || "",
     classificacao: classificacao(row.resultado),
     equipe: equipe,
@@ -3592,6 +3637,12 @@ function findGeoCols(headerRow, map){
   g.cidade = acha(padrao("colunaCidade","K"), ["MUNICIPIO","CIDADE","MUNICIPIO IMOVEL","NOME MUNICIPIO","DESCRICAO MUNICIPIO"], /MUNICIPIO|^CIDADE/);
   if (g.cidade>=0) usados[g.cidade] = 1;
   g.cep = acha("", ["CEP","CEP IMOVEL","CEP DO IMOVEL"], /\bCEP\b/);
+  if (g.cep>=0) usados[g.cep] = 1;
+  /* observações (pode haver mais de uma coluna: todas são juntadas) */
+  g.obs = [];
+  var nucleo = {}; Object.keys(map).forEach(function(k){ if (map[k]>=0) nucleo[map[k]] = 1; });
+  normed.forEach(function(h, i){ if (!nucleo[i] && i!==g.lat && i!==g.lng && i!==g.coord && /OBSERV|^OBS\b|\bOBS$|COMENTARIO|PARECER|ANOTAC|HISTORICO EXEC|TEXTO (DA )?EXECUCAO|DESCRICAO (DA )?EXECUCAO/.test(h)) g.obs.push(i); });
+  ["end","num","bairro","cidade","tlog"].forEach(function(k){ if (g[k]>=0 && g.obs.indexOf(g[k])!==-1) g[k] = -1; });
   var nm = function(i){ return i>=0 ? String(headerRow[i]||"").trim() || ("coluna "+String.fromCharCode(65+i%26)) : ""; };
   g.nomes = { lat: nm(g.lat), lng: nm(g.lng), coord: nm(g.coord), end: nm(g.end), num: nm(g.num), bairro: nm(g.bairro), cidade: nm(g.cidade) };
   return g;
@@ -3697,6 +3748,7 @@ function parseWorkbookExecucao(workbook, fileName){
     var gl = geoDaLinha(row, geo);
     var rec = buildRecord({
       lat: gl.lat, lng: gl.lng, endereco: gl.endereco,
+      obs: (geo.obs||[]).map(function(ix){ var v = row[ix]; return v==null ? "" : String(v).trim(); }).filter(function(v){ return v && v!=="-" && v!=="0"; }).join(" · "),
       unidade: row[map.unidade],
       numOS: row[map.numOS],
       tipo: tipoIdx>=0 ? row[tipoIdx] : "",
@@ -3845,7 +3897,7 @@ function importOneFile(file, type){
       /* A mesma linha (mesma OS, mesmo colaborador, mesmo início) já importada
          antes não é duplicada — só recebe o que faltava, como o tipo da OS. */
       var ex = new Map();
-      STATE.records.forEach(function(r){ ex.set(r.numOS+"|"+r.equipe+"|"+(r.dataInicio?r.dataInicio.getTime():""), r); });
+      STATE.records.forEach(function(r){ ex.set(r.numOS+"|"+up(r._orig!==undefined ? r._orig : r.equipe)+"|"+(r.dataInicio?r.dataInicio.getTime():""), r); });
       var novos = [], repetidos = 0, completados = 0;
       res.records.forEach(function(r){
         var k = r.numOS+"|"+r.equipe+"|"+(r.dataInicio?r.dataInicio.getTime():"");
@@ -3854,6 +3906,7 @@ function importOneFile(file, type){
           repetidos++;
           var mudou = false;
           if (!old.tipo && r.tipo){ old.tipo = r.tipo; mudou = true; }
+          if (r.obs && r.obs!==old.obs){ old.obs = r.obs; mudou = true; }
           if (old.lat==null && r.lat!=null){ old.lat = r.lat; old.lng = r.lng; mudou = true; }
           if (r.endereco && r.endereco!==old.endereco){
             old.endereco = r.endereco; mudou = true;
@@ -4112,7 +4165,7 @@ var PAGE_META = {
   ranking:      { title:"Ranking",           sub:"Melhores colocados — geral e por base" },
   resultados:   { title:"Resultados das OS",  sub:"O que aconteceu em cada ordem de serviço" },
   apresentacao: { title:"Apresentação",       sub:"Slides em tela cheia com os dados da equipe, sem nomes" },
-  acesso:       { title:"Acesso dos colaboradores", sub:"Códigos individuais e publicação dos resultados para o celular" },
+  acesso:       { title:"Chaves de acesso", sub:"Crie a chave de cada colaborador para ele ver os próprios resultados no celular" },
   nomes:        { title:"Nomes & PDA",        sub:"Lista oficial do Painel de Controle, vínculo de nomes e OS de PDA" },
   frota:        { title:"Carro × Moto",       sub:"Veículo de cada colaborador e os resultados de cada grupo" },
   servicos:     { title:"Serviços manuais",   sub:"Lançar OS feitas fora da planilha e acompanhar em gráficos" },
@@ -6139,6 +6192,29 @@ function pdaOficiais(){
   if (!l.length) l = A.distinctEmployees({}).filter(function(n){ return n.indexOf("PDA · ")!==0; });
   return l.sort(function(a,b){ return a.localeCompare(b, "pt-BR"); });
 }
+function pdaMarca(obs, nome){
+  var tk = {}; if (nome) A.normKey(nome).split(" ").forEach(function(x){ if (x.length>=3) tk[x] = 1; });
+  return String(obs).split(/(\s+|[,.;:\/()\-]+)/).map(function(w){ return tk[A.normKey(w)] ? '<mark>'+esc(w)+'</mark>' : esc(w); }).join("");
+}
+/* procura um colaborador oficial citado na observação da OS */
+function pdaIndiceNomes(oficiais){
+  var STOP = { DA:1, DE:1, DO:1, DAS:1, DOS:1, E:1 }, prim = {};
+  var l = oficiais.map(function(n){ var t = A.normKey(n).split(" ").filter(function(x){ return x.length>=3 && !STOP[x]; }); if (t[0]) prim[t[0]] = (prim[t[0]]||0)+1; return { nome:n, t:t }; });
+  return { l:l, prim:prim };
+}
+function pdaSugere(obs, idx){
+  if (!obs) return "";
+  var w = {}; A.normKey(obs).split(" ").forEach(function(x){ w[x] = 1; });
+  var best = "", bestN = 0, empate = false;
+  idx.l.forEach(function(o){
+    if (!o.t.length) return;
+    var n = o.t.filter(function(x){ return w[x]; }).length;
+    var ok = n>=2 || (n===1 && w[o.t[0]] && idx.prim[o.t[0]]===1);
+    if (!ok) return;
+    if (n>bestN){ best = o.nome; bestN = n; empate = false; } else if (n===bestN) empate = true;
+  });
+  return empate ? "" : best;
+}
 function renderPDA(){
   var box = document.getElementById("pdaCard"); if (!box) return;
   var pdas = A.pdaNomes(), atr = A.pdaAtrib();
@@ -6159,14 +6235,16 @@ function renderPDA(){
     if (fP!=="todos" && A.normKey(r._orig)!==fP) return false;
     if (fM!=="todos" && (!r.dataInicio || (r.dataInicio.getFullYear()+"-"+String(r.dataInicio.getMonth()+1).padStart(2,"0"))!==fM)) return false;
     if (fS==="pend" && !r._pdaPend) return false; if (fS==="atr" && r._pdaPend) return false;
-    if (qOS && String(r.numOS||"").indexOf(qOS)===-1) return false;
+    if (qOS && String(r.numOS||"").indexOf(qOS)===-1 && A.normKey(r.obs||"").indexOf(A.normKey(qOS))===-1) return false;
     return true;
   }).sort(function(a,b){ return b._t-a._t; });
   var nPend = todas.filter(function(r){ return r._pdaPend; }).length;
   var porDia = {}, ordemDias = [];
   filtradas.forEach(function(r){ var d = (r.dataInicio ? dateToISO(r.dataInicio) : "sem data")+"|"+A.normKey(r._orig); if (!porDia[d]){ porDia[d] = []; ordemDias.push(d); } porDia[d].push(r); });
-  var limite = UI.pdaLimite || 40;
+  var limite = UI.pdaLimite || 12;
   var oficiais = pdaOficiais(), recentes = (UI.pdaRecentes||[]).filter(function(n){ return oficiais.indexOf(n)!==-1; });
+  var idxN = pdaIndiceNomes(oficiais), sug = {}, nSug = 0, temObs = todas.some(function(r){ return r.obs; });
+  filtradas.forEach(function(r){ var k = A.osKey(r); if (!atr[k]){ var x = pdaSugere(r.obs, idxN); if (x){ sug[k] = x; nSug++; } } });
   var MC = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 
   box.innerHTML =
@@ -6188,12 +6266,15 @@ function renderPDA(){
           + '<div class="field"><select id="pdaFP"><option value="todos">Todos os PDAs</option>'+Object.keys(porPda).map(function(k){ return '<option value="'+esc(k)+'"'+(fP===k?" selected":"")+'>'+esc(porPda[k].orig)+' ('+fmtInt(porPda[k].pend)+' sem dono)</option>'; }).join("")+'</select></div>'
           + '<div class="field"><select id="pdaFM"><option value="todos">Todos os meses</option>'+mesK.map(function(k){ var p2 = k.split("-"); return '<option value="'+k+'"'+(fM===k?" selected":"")+'>'+MC[+p2[1]-1]+'/'+p2[0]+' ('+fmtInt(meses[k])+')</option>'; }).join("")+'</select></div>'
           + '<div class="seg">'+[["pend","Sem dono"],["atr","Ligadas"],["todas","Todas"]].map(function(o){ return '<button type="button" data-fs="'+o[0]+'" class="'+(fS===o[0]?"on":"")+'">'+o[1]+'</button>'; }).join("")+'</div>'
-          + '<div class="search-input-wrap"><span class="sic">'+IC('search')+'</span><input type="search" id="pdaBO" placeholder="Nº da OS" value="'+esc(UI.pdaBuscaOS||"")+'"></div>'
+          + '<div class="search-input-wrap"><span class="sic">'+IC('search')+'</span><input type="search" id="pdaBO" placeholder="Nº da OS ou texto da observação" value="'+esc(UI.pdaBuscaOS||"")+'"></div>'
         + '</div>'
+        + (!temObs ? '<div class="note" style="margin-bottom:10px;">'+IC('alert','i-sm')+' As observações das OS ainda não foram lidas. Importe de novo as planilhas de Execução (nada é duplicado) para trazer a coluna de observação.</div>' : '')
         + '<div class="pda-bar2">'
           + '<label class="pda-all"><input type="checkbox" id="pdaTodasVis"> <span id="pdaSelN">0 selecionada(s)</span></label>'
           + '<div class="pda-to2"><input type="text" id="pdaPara" list="pdaOf" placeholder="Ligar ao colaborador…"><datalist id="pdaOf">'+oficiais.map(function(n){ return '<option value="'+esc(titleCase(n))+'">'; }).join("")+'</datalist>'
           + '<button type="button" class="btn btn-sm btn-primary" id="pdaAtribuir">'+IC('check','i-sm')+' Ligar</button><button type="button" class="btn btn-sm btn-ghost" id="pdaLimpar">Tirar dono</button></div>'
+          + (nSug ? '<button type="button" class="btn btn-sm pda-sugall" id="pdaSugTodos">'+IC('checkCircle','i-sm')+' Ligar as '+fmtInt(nSug)+' com nome na observação</button>' : '')
+          + ''
           + (recentes.length ? '<div class="pda-rec"><span>Usados agora há pouco:</span>'+recentes.map(function(n){ return '<button type="button" data-rec="'+esc(n)+'">'+esc(titleCase(n).split(" ").slice(0,2).join(" "))+'</button>'; }).join("")+'</div>' : '')
         + '</div>'
         + (filtradas.length ? '<div class="pda-l2">'+ordemDias.slice(0, limite).map(function(dk){
@@ -6202,7 +6283,8 @@ function renderPDA(){
             return '<div class="pda-d2"><label class="pda-dh2"><input type="checkbox" data-dia="'+esc(dk)+'"><b>'+(dt ? fmtDateBR(dt)+' · '+DOW[dt.getDay()] : d)+'</b><span class="pn">'+IC('phone','i-sm')+esc(rs[0]._orig)+'</span><span>'+fmtInt(rs.length)+' OS · '+(rs[0].dataInicio ? rs[0].dataInicio.toTimeString().slice(0,5) : "")+' → '+(rs[rs.length-1].dataInicio ? rs[rs.length-1].dataInicio.toTimeString().slice(0,5) : "")+'</span>'
               + (Object.keys(donos).length ? '<em>'+Object.keys(donos).map(function(n){ return esc(titleCase(n).split(" ")[0]); }).join(", ")+'</em>' : '')+'</label>'
               + rs.map(function(r){ var key = A.osKey(r), dono = atr[key];
-                  return '<label class="pda-r2'+(dono?" atr":"")+'"><input type="checkbox" data-os="'+esc(key)+'" data-d="'+esc(dk)+'"><span class="h">'+(r.dataInicio ? r.dataInicio.toTimeString().slice(0,5) : "—")+'</span><span class="n">OS '+esc(r.numOS||"—")+'</span><span class="t">'+esc(titleCase(r.tipo||""))+'</span><span class="res '+(r._cls==="P"?"p":"")+'">'+esc(titleCase(r.resultado||""))+'</span><span class="e">'+esc(r.endereco||r.bairro||"")+'</span><span class="w">'+(dono ? IC('check','i-sm')+esc(titleCase(dono)) : '<em>sem dono</em>')+'</span></label>';
+                  return '<label class="pda-r2'+(dono?" atr":"")+'"><input type="checkbox" data-os="'+esc(key)+'" data-d="'+esc(dk)+'"><span class="h">'+(r.dataInicio ? r.dataInicio.toTimeString().slice(0,5) : "—")+'</span><span class="n">OS '+esc(r.numOS||"—")+'</span><span class="t">'+esc(titleCase(r.tipo||""))+'</span><span class="res '+(r._cls==="P"?"p":"")+'">'+esc(titleCase(r.resultado||""))+'</span><span class="e">'+esc(r.endereco||r.bairro||"")+'</span><span class="w">'+(dono ? IC('check','i-sm')+esc(titleCase(dono)) : (sug[key] ? '<button type="button" class="pda-sug" data-sug="'+esc(key)+'" data-sn="'+esc(sug[key])+'" title="Nome encontrado na observação">Ligar a '+esc(titleCase(sug[key]).split(" ").slice(0,2).join(" "))+'?</button>' : '<em>sem dono</em>'))+'</span>'
+                    + (r.obs ? '<span class="o">'+IC('file','i-sm')+pdaMarca(r.obs, sug[key] || dono)+'</span>' : '')+'</label>';
                 }).join("")
             + '</div>';
           }).join("")+'</div>'
@@ -6227,11 +6309,14 @@ function renderPDA(){
   box.querySelectorAll("[data-dia]").forEach(function(c){ c.onchange = function(){ box.querySelectorAll('[data-os][data-d="'+c.dataset.dia+'"]').forEach(function(x){ x.checked = c.checked; }); marca(); }; });
   box.querySelectorAll("[data-os]").forEach(function(c){ c.onchange = marca; });
   document.getElementById("pdaTodasVis").onchange = function(e){ box.querySelectorAll("[data-os],[data-dia]").forEach(function(x){ x.checked = e.target.checked; }); marca(); };
-  document.getElementById("pdaFP").onchange = function(e){ UI.pdaFiltroNome = e.target.value; UI.pdaLimite = 40; renderPDA(); };
-  document.getElementById("pdaFM").onchange = function(e){ UI.pdaMes = e.target.value; UI.pdaLimite = 40; renderPDA(); };
-  box.querySelectorAll("[data-fs]").forEach(function(b){ b.onclick = function(){ UI.pdaFiltro = b.dataset.fs; UI.pdaLimite = 40; renderPDA(); }; });
+  document.getElementById("pdaFP").onchange = function(e){ UI.pdaFiltroNome = e.target.value; UI.pdaLimite = 12; renderPDA(); };
+  document.getElementById("pdaFM").onchange = function(e){ UI.pdaMes = e.target.value; UI.pdaLimite = 12; renderPDA(); };
+  box.querySelectorAll("[data-fs]").forEach(function(b){ b.onclick = function(){ UI.pdaFiltro = b.dataset.fs; UI.pdaLimite = 12; renderPDA(); }; });
   var bo = document.getElementById("pdaBO"); bo.addEventListener("input", debounce(function(){ UI.pdaBuscaOS = bo.value; renderPDA(); var b3 = document.getElementById("pdaBO"); b3.focus(); b3.setSelectionRange(b3.value.length, b3.value.length); }, 250));
-  var mais = document.getElementById("pdaMais"); if (mais) mais.onclick = function(){ UI.pdaLimite = limite + 40; renderPDA(); };
+  box.querySelectorAll("[data-sug]").forEach(function(b){ b.onclick = function(e){ e.preventDefault(); e.stopPropagation(); var n = b.dataset.sn; atr[b.dataset.sug] = n; UI.pdaRecentes = [n].concat((UI.pdaRecentes||[]).filter(function(x){ return x!==n; })).slice(0, 6); nomesAplicar("OS ligada a "+titleCase(n)); }; });
+  var st = document.getElementById("pdaSugTodos");
+  if (st) st.onclick = function(){ if (!confirm("Ligar "+nSug+" OS ao colaborador citado na observação de cada uma?")) return; Object.keys(sug).forEach(function(k){ atr[k] = sug[k]; }); nomesAplicar(fmtInt(nSug)+" OS ligadas pelo nome na observação"); };
+  var mais = document.getElementById("pdaMais"); if (mais) mais.onclick = function(){ UI.pdaLimite = limite + 20; renderPDA(); };
   box.querySelectorAll("[data-rec]").forEach(function(b){ b.onclick = function(){ document.getElementById("pdaPara").value = titleCase(b.dataset.rec); }; });
   var resolvePara = function(){
     var v = A.normKey(document.getElementById("pdaPara").value);
@@ -6324,9 +6409,9 @@ function acessoDados(nome, meses, cacheMes){
   });
   return out;
 }
-function acessoPublicar(chave, progresso){
-  var a = acessoCfg(), pessoas = acessoPessoas().filter(function(n){ return a.codigos[n]; });
-  if (!pessoas.length) return Promise.reject(new Error("Gere os códigos antes de publicar."));
+function acessoPublicar(chave, progresso, soNomes){
+  var a = acessoCfg(), pessoas = acessoPessoas().filter(function(n){ return a.codigos[n] && (!soNomes || soNomes.indexOf(n)!==-1); });
+  if (!pessoas.length) return Promise.reject(new Error("Crie as chaves antes de publicar."));
   var lista = (UI.periodsList || []).slice(-Math.max(1, +a.meses || 6));
   if (!lista.length) return Promise.reject(new Error("Importe planilhas antes de publicar."));
   var cache = {};
@@ -6340,9 +6425,9 @@ function acessoPublicar(chave, progresso){
   var lotes = []; for (var i=0;i<linhas.length;i+=8) lotes.push(linhas.slice(i, i+8));
   var ativos = linhas.map(function(l){ return l.codigo; }), feito = 0;
   return lotes.reduce(function(pr, lote, li){
-    return pr.then(function(){ return acessoRpc("admin_publicar", { chave:chave, linhas:lote, limpar_ausentes:true, lote_final: li===lotes.length-1, codigos_ativos: li===lotes.length-1 ? ativos : [] }); })
+    return pr.then(function(){ return acessoRpc("admin_publicar", { chave:chave, linhas:lote, limpar_ausentes:!soNomes, lote_final: li===lotes.length-1, codigos_ativos: li===lotes.length-1 ? ativos : [] }); })
       .then(function(n){ feito += (n||0); if (progresso) progresso(feito, linhas.length); });
-  }, Promise.resolve()).then(function(){ a.publicado = new Date().toISOString(); a.publicadoN = feito; saveSettings(); return feito; });
+  }, Promise.resolve()).then(function(){ if (!soNomes){ a.publicado = new Date().toISOString(); a.publicadoN = feito; } saveSettings(); return feito; });
 }
 
 function acessoHash(cod){
@@ -6351,7 +6436,7 @@ function acessoHash(cod){
   return crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)).then(function(b){ return Array.prototype.map.call(new Uint8Array(b), function(x){ return ("0"+x.toString(16)).slice(-2); }).join(""); });
 }
 function acessoLink(n){ var c = acessoCfg().codigos[n]; return c ? acessoPagina()+"#c="+c.codigo : ""; }
-function acessoMsg(n){ var c = acessoCfg().codigos[n]; return "Olá, "+titleCase(n).split(" ")[0]+"! Acompanhe seus resultados de produtividade pelo celular:\n"+acessoLink(n)+"\nSeu código: "+c.codigo+"\n(Não compartilhe o código.)"; }
+function acessoMsg(n){ var c = acessoCfg().codigos[n]; return "Olá, "+titleCase(n).split(" ")[0]+"! Acompanhe seus resultados de produtividade pelo celular:\n"+acessoLink(n)+"\nSua chave: "+c.codigo+"\n(Não compartilhe a sua chave.)"; }
 function acessoQuando(iso){
   if (!iso) return "";
   var d = new Date(iso), h = (Date.now() - d.getTime())/3600000;
@@ -6381,8 +6466,8 @@ function acessoQR(n){
     + '<button type="button" class="ac-qx" aria-label="Fechar">×</button>'
     + '<div class="ac-qrh"><span>Acesso pelo celular</span><b>'+esc(titleCase(n))+'</b></div>'
     + '<div class="ac-qri">'+svg+'</div>'
-    + '<div class="ac-qrcod"><span>Código</span><code>'+esc(c.codigo)+'</code></div>'
-    + '<p>Aponte a câmera do celular para o QR code — a página já abre com o código preenchido.</p>'
+    + '<div class="ac-qrcod"><span>Chave</span><code>'+esc(c.codigo)+'</code></div>'
+    + '<p>Aponte a câmera do celular para o QR code — a página já abre com a chave preenchida.</p>'
     + '<div class="ac-qrb"><button type="button" class="btn btn-sm" data-q="copiar">'+IC('clipboard','i-sm')+' Copiar link</button><button type="button" class="btn btn-sm" data-q="abrir">'+IC('eye','i-sm')+' Ver como colaborador</button><button type="button" class="btn btn-sm btn-primary" data-q="imprimir">'+IC('download','i-sm')+' Imprimir</button></div>'
   + '</div>';
   document.body.appendChild(fundo);
@@ -6397,16 +6482,56 @@ function acessoQR(n){
     else if (b.dataset.q==="imprimir"){
       var w = window.open("", "_blank"); if (!w){ A.toast("O navegador bloqueou a janela de impressão.", "err"); return; }
       w.document.write('<!doctype html><meta charset="utf-8"><title>Acesso · '+esc(titleCase(n))+'</title><style>body{font-family:system-ui,sans-serif;display:flex;justify-content:center;padding:40px;color:#111}.c{border:2px dashed #bbb;border-radius:18px;padding:28px 34px;text-align:center;width:300px}h2{margin:0 0 4px;font-size:20px}p{margin:0 0 16px;color:#555;font-size:13px}code{display:inline-block;margin-top:14px;font-size:24px;font-weight:800;letter-spacing:.12em;padding:6px 14px;border-radius:10px;background:#fff1ea;color:#e8490f}small{display:block;margin-top:12px;color:#777;font-size:11px;word-break:break-all}<\/style>'
-        + '<div class="c"><h2>'+esc(titleCase(n))+'</h2><p>Seus resultados de produtividade no celular</p>'+QR.svg(link, 220, "#111", "#fff")+'<br><code>'+esc(c.codigo)+'</code><small>'+esc(acessoPagina())+'</small><small>Código pessoal — não compartilhe.</small></div><script>setTimeout(function(){print()},300)<\/script>');
+        + '<div class="c"><h2>'+esc(titleCase(n))+'</h2><p>Seus resultados de produtividade no celular</p>'+QR.svg(link, 220, "#111", "#fff")+'<br><code>'+esc(c.codigo)+'</code><small>'+esc(acessoPagina())+'</small><small>Chave pessoal — não compartilhe.</small></div><script>setTimeout(function(){print()},300)<\/script>');
       w.document.close();
     }
+  });
+}
+function acessoSenha(){ return UI.acChave || (typeof nuvemChave==="function" ? nuvemChave() : ""); }
+/* cria (ou mostra) a chave de uma pessoa e já deixa ativa se a senha do administrador estiver salva */
+function chaveCriar(n, depois){
+  var a = acessoCfg(), nova = !a.codigos[n];
+  if (nova){ a.codigos[n] = { codigo:novoCodigo(), criado:new Date().toISOString() }; saveSettings(); }
+  chaveModal(n, nova);
+  var ch = acessoSenha();
+  var st = function(t, cls){ var e = document.getElementById("chSt"); if (e){ e.className = "ch-st "+(cls||""); e.innerHTML = t; } };
+  if (!ch){ st(IC('alert','i-sm')+' Para a chave funcionar, informe a senha do administrador em <b>Chaves de acesso</b> e clique em Publicar.', "warn"); if (depois) depois(); return; }
+  if (nova || !(UI.acStatus && UI.acStatus.map[n])){
+    st('<span class="spin2"></span> Ativando a chave…');
+    acessoPublicar(ch, null, [n]).then(function(){ st(IC('checkCircle','i-sm')+' Chave ativa — já pode mandar para '+esc(titleCase(n).split(" ")[0])+'.', "ok"); if (UI.acStatus) UI.acStatus.map[n] = UI.acStatus.map[n] || { acessos:0, atualizado:new Date().toISOString() }; if (depois) depois(); })
+      .catch(function(err){ st(IC('alert','i-sm')+' Não ativou: '+esc(err.message), "warn"); if (depois) depois(); });
+  } else { st(IC('checkCircle','i-sm')+' Chave ativa.', "ok"); if (depois) depois(); }
+}
+function chaveModal(n, nova){
+  var a = acessoCfg(), c = a.codigos[n], link = acessoLink(n);
+  var fundo = document.createElement("div"); fundo.className = "ac-qrm";
+  var svg = ""; try { svg = QR.svg(link, 200, "#111", "#fff"); } catch(e){}
+  fundo.innerHTML = '<div class="ac-qrc ch-m" role="dialog">'
+    + '<button type="button" class="ac-qx" aria-label="Fechar">×</button>'
+    + '<div class="ac-qrh"><span>'+(nova ? 'Chave criada' : 'Chave de acesso')+'</span><b>'+esc(titleCase(n))+'</b></div>'
+    + '<div class="ch-cod"><code>'+esc(c.codigo)+'</code></div>'
+    + '<div id="chSt" class="ch-st"></div>'
+    + '<ol class="ch-pass"><li>Mande a chave para '+esc(titleCase(n).split(" ")[0])+' (WhatsApp ou copiando a mensagem).</li><li>No celular, ele abre <b>'+esc(acessoPagina().replace(/^https?:\/\//,""))+'</b> e digita a chave — ou aponta a câmera para o QR.</li><li>Pronto: ele vê só o painel com os resultados dele.</li></ol>'
+    + '<div class="ac-qri sm">'+svg+'</div>'
+    + '<div class="ac-qrb"><a class="btn btn-sm btn-primary" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(acessoMsg(n))+'">'+IC('send','i-sm')+' WhatsApp</a><button type="button" class="btn btn-sm" data-q="copiar">'+IC('clipboard','i-sm')+' Copiar mensagem</button><button type="button" class="btn btn-sm" data-q="qr">'+IC('qr','i-sm')+' QR / imprimir</button><button type="button" class="btn btn-sm" data-q="abrir">'+IC('eye','i-sm')+' Ver como ele</button></div>'
+  + '</div>';
+  document.body.appendChild(fundo);
+  var fecha = function(){ fundo.remove(); document.removeEventListener("keydown", k); };
+  var k = function(e){ if (e.key==="Escape") fecha(); };
+  document.addEventListener("keydown", k);
+  fundo.addEventListener("click", function(e){
+    if (e.target===fundo || e.target.closest(".ac-qx")) return fecha();
+    var b = e.target.closest("[data-q]"); if (!b) return;
+    if (b.dataset.q==="copiar"){ var t = acessoMsg(n); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){ A.toast("Mensagem copiada", "ok"); }).catch(function(){ prompt("Copie a mensagem:", t); }); }
+    else if (b.dataset.q==="qr"){ fecha(); acessoQR(n); }
+    else if (b.dataset.q==="abrir") window.open(link, "_blank", "noopener");
   });
 }
 function renderAcesso(){
   var el = document.getElementById("page-acesso");
   var a = acessoCfg(), pessoas = acessoPessoas(), q = A.normKey(UI.acBusca||"");
   var com = pessoas.filter(function(n){ return a.codigos[n]; }).length;
-  var chave = UI.acChave || (function(){ try { return sessionStorage.getItem("acChave") || ""; } catch(e){ return ""; } })();
+  var chave = acessoSenha(), lembrada = false; try { lembrada = !!localStorage.getItem("nuvem_chave"); } catch(e){}
   var pag = acessoPagina(), st = UI.acStatus, sm = st ? st.map : {};
   var sit = function(n){
     if (!a.codigos[n]) return "sem";
@@ -6427,14 +6552,16 @@ function renderAcesso(){
 
   el.innerHTML =
     '<div class="ac-hero">'
-      + '<div class="ac-ht"><span class="pa-tag">'+IC('phone','i-sm')+' Acesso dos colaboradores</span>'
-        + '<h3>Cada colaborador vê só os próprios números, pelo celular</h3>'
-        + '<p>Sem cadastro e sem senha: cada pessoa tem um código único (ou o QR code). Página: <b>'+esc(pag)+'</b></p>'
+      + '<div class="ac-ht"><span class="pa-tag">'+IC('phone','i-sm')+' Chaves de acesso</span>'
+        + '<h3>Crie a chave, mande para o colaborador e ele vê os próprios resultados</h3>'
+        + '<p>Cada pessoa tem uma chave única. Com ela, abre <b>'+esc(pag)+'</b> no celular e vê só o painel dela.</p>'
+        + '<div class="ac-novo"><input type="text" id="acNovoNome" list="acNovoL" placeholder="Criar chave para… (digite o nome)" autocomplete="off"><datalist id="acNovoL">'+pessoas.map(function(n){ return '<option value="'+esc(titleCase(n))+'">'; }).join("")+'</datalist><button type="button" class="btn btn-primary" id="acNovoBtn">'+IC('plus','i-sm')+' Criar chave</button></div>'
         + '<div class="ac-st"><span>'+IC('upload','i-sm')+(a.publicado ? 'Publicado '+acessoQuando(a.publicado)+' · '+fmtInt(a.publicadoN||0)+' pessoa(s)' : 'Ainda não publicado')+'</span>'
           + (st ? '<span>'+IC('refresh','i-sm')+'Verificado '+acessoQuando(new Date(st.em).toISOString())+'</span>' : '')+'</div></div>'
       + '<div class="ac-pub">'
-        + '<label class="ac-key"><span>Chave de administrador</span><input type="password" id="acChave" placeholder="sua chave secreta" value="'+esc(chave)+'" autocomplete="off"></label>'
-        + '<div class="ac-pb"><button type="button" class="pa-go" id="acPub">'+IC('upload')+'<span><b>Publicar resultados</b><em>últimos '+fmtInt(+a.meses||6)+' mês(es) · '+fmtInt(com)+' com código</em></span></button>'
+        + '<label class="ac-key"><span>Senha do administrador <em>(só você)</em></span><input type="password" id="acChave" placeholder="sua senha de administrador" value="'+esc(chave)+'" autocomplete="off"></label>'
+        + '<label class="ac-lemb"><input type="checkbox" id="acLembra"'+(lembrada?" checked":"")+'> Lembrar neste computador (as chaves novas ficam ativas na hora)</label>'
+        + '<div class="ac-pb"><button type="button" class="pa-go" id="acPub">'+IC('upload')+'<span><b>Publicar resultados</b><em>atualiza os números de todos · '+fmtInt(com)+' com chave</em></span></button>'
         + '<button type="button" class="ac-ver" id="acVer" title="Buscar no Supabase quem já acessou">'+IC('refresh')+'<span>Verificar</span></button></div>'
         + '<div class="ac-prog" id="acProg"></div>'
       + '</div>'
@@ -6442,29 +6569,29 @@ function renderAcesso(){
 
     + '<div class="ac-ks">'
       + kpi(cont.todos, "colaboradores", "", "todos")
-      + kpi(cont.sem, "sem código", cont.sem ? "warn" : "", "sem")
-      + kpi(st ? cont.naopub : null, "código não publicado", st && cont.naopub ? "warn" : "", "naopub")
+      + kpi(cont.sem, "sem chave", cont.sem ? "warn" : "", "sem")
+      + kpi(st ? cont.naopub : null, "chave ainda não ativa", st && cont.naopub ? "warn" : "", "naopub")
       + kpi(st ? cont.nunca : null, "nunca acessaram", st && cont.nunca ? "bad" : "", "nunca")
       + kpi(st ? cont.acessou : null, "já acessaram", "ok", "acessou")
       + '<div class="ac-k sm"><b>'+(st ? fmtInt(cont.semana) : "—")+'</b><span>acessaram nos últimos 7 dias</span></div>'
     + '</div>'
-    + (!st ? '<div class="note">'+IC('alert','i-sm')+' Digite a chave de administrador e clique em <b>Verificar</b> para ver quem já está publicado, o último acesso e quantas vezes cada um entrou.</div>' : '')
-    + (st && st.orfaos ? '<div class="note">'+IC('alert','i-sm')+' '+fmtInt(st.orfaos)+' código(s) publicado(s) no Supabase não estão mais na sua lista — somem na próxima publicação.</div>' : '')
+    + (!st ? '<div class="note">'+IC('alert','i-sm')+ ' Digite a senha do administrador e clique em <b>Verificar</b> para ver quem já está publicado, o último acesso e quantas vezes cada um entrou.</div>' : '')
+    + (st && st.orfaos ? '<div class="note">'+IC('alert','i-sm')+' '+fmtInt(st.orfaos)+' chave(s) antiga(s) ainda ativa(s) no Supabase — somem na próxima publicação.</div>' : '')
 
     + '<div class="card">'+cardHead("Painel de verificação", (A.painelCfg().lista||[]).length ? "lista do Painel de Controle · clique no QR para mostrar ou imprimir" : "colaboradores das planilhas (conecte o Painel em Nomes & PDA para usar a lista oficial)")
       + '<div class="ac-tool">'
         + '<div class="search-input-wrap"><span class="sic">'+IC('search')+'</span><input type="search" id="acBusca" placeholder="Buscar..." value="'+esc(UI.acBusca||"")+'"></div>'
         + '<select id="acOrd"><option value="nome">Ordenar por nome</option><option value="acesso"'+(UI.acOrd==="acesso"?" selected":"")+'>Último acesso primeiro</option></select>'
         + '<span class="sp"></span>'
-        + (cont.sem ? '<button type="button" class="btn btn-sm btn-primary" id="acGerarTodos">'+IC('plus','i-sm')+' Gerar para quem não tem ('+fmtInt(cont.sem)+')</button>' : '')
-        + '<button type="button" class="btn btn-sm" id="acCsv">'+IC('download','i-sm')+' Lista de códigos</button>'
+        + (cont.sem ? '<button type="button" class="btn btn-sm" id="acGerarTodos">'+IC('plus','i-sm')+' Criar para todos sem chave ('+fmtInt(cont.sem)+')</button>' : '')
+        + '<button type="button" class="btn btn-sm" id="acCsv">'+IC('download','i-sm')+' Lista de chaves</button>'
         + '<button type="button" class="btn btn-sm" id="acPrintAll">'+IC('download','i-sm')+' Imprimir todos os QR</button>'
       + '</div>'
       + '<div class="ac-l">'+(vis.length ? vis.map(function(n){
           var c = a.codigos[n], b = employeeArea(n) || "", s2 = sit(n), x = sm[n];
-          var tag = { sem:'<span class="ac-t">sem código</span>', "?":'<span class="ac-t">não verificado</span>', naopub:'<span class="ac-t warn">publique para ativar</span>', nunca:'<span class="ac-t bad">nunca acessou</span>', acessou:'<span class="ac-t ok">'+IC('check','i-sm')+'acessou '+acessoQuando(x && x.ultimo_acesso)+'</span>' }[s2];
+          var tag = { sem:'<span class="ac-t">sem chave</span>', "?":'<span class="ac-t">não verificado</span>', naopub:'<span class="ac-t warn">ainda não ativa</span>', nunca:'<span class="ac-t bad">nunca acessou</span>', acessou:'<span class="ac-t ok">'+IC('check','i-sm')+'acessou '+acessoQuando(x && x.ultimo_acesso)+'</span>' }[s2];
           return '<div class="ac-r s-'+s2.replace("?","q")+'" data-n="'+esc(n)+'"><div class="avatar">'+fotoDe(n)+'</div>'
-            + '<div class="ac-n"><b>'+esc(titleCase(n))+'</b><span>'+esc(b || "sem base")+(x ? ' · '+fmtInt(x.acessos||0)+' acesso(s) · publicado '+acessoQuando(x.atualizado) : (c ? ' · código de '+fmtDateBR(new Date(c.criado)) : ''))+'</span></div>'
+            + '<div class="ac-n"><b>'+esc(titleCase(n))+'</b><span>'+esc(b || "sem base")+(x ? ' · '+fmtInt(x.acessos||0)+' acesso(s) · publicado '+acessoQuando(x.atualizado) : (c ? ' · chave de '+fmtDateBR(new Date(c.criado)) : ''))+'</span></div>'
             + tag
             + (c ? '<code class="ac-c">'+esc(c.codigo)+'</code>'
                 + '<div class="ac-acts">'
@@ -6472,9 +6599,9 @@ function renderAcesso(){
                 + '<button type="button" class="btn btn-sm" data-a="copiar" title="Copiar mensagem com link e código">'+IC('clipboard','i-sm')+'</button>'
                 + '<a class="btn btn-sm" data-a="zap" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(acessoMsg(n))+'" title="Enviar pelo WhatsApp">'+IC('send','i-sm')+'</a>'
                 + '<a class="btn btn-sm" target="_blank" rel="noopener" href="'+esc(acessoLink(n))+'" title="Ver como colaborador">'+IC('eye','i-sm')+'</a>'
-                + '<button type="button" class="btn btn-sm btn-ghost" data-a="trocar" title="Gerar outro código (o antigo para de funcionar na próxima publicação)">'+IC('refresh','i-sm')+'</button>'
+                + '<button type="button" class="btn btn-sm btn-ghost" data-a="trocar" title="Trocar a chave (a antiga para de funcionar)">'+IC('refresh','i-sm')+'</button>'
                 + '<button type="button" class="btn btn-sm btn-ghost" data-a="remover" title="Tirar o acesso">×</button></div>'
-              : '<button type="button" class="btn btn-sm" data-a="gerar">'+IC('plus','i-sm')+' Gerar código</button>')
+              : '<button type="button" class="btn btn-sm btn-primary" data-a="gerar">'+IC('plus','i-sm')+' Criar chave</button>')
           + '</div>';
         }).join("") : '<div class="empty-state">Ninguém neste filtro.</div>')+'</div>'
     + '</div>'
@@ -6483,17 +6610,27 @@ function renderAcesso(){
       + '<div>'
         + '<label class="pa-f"><span>URL do projeto</span><input type="text" id="acUrl" value="'+esc(a.url)+'"></label>'
         + '<label class="pa-f"><span>Chave pública (publishable)</span><input type="text" id="acKey" value="'+esc(a.key)+'"></label>'
-        + '<label class="pa-f"><span>Endereço da página do colaborador</span><input type="text" id="acPag" value="'+esc(a.pagina||"")+'" placeholder="'+esc(pag)+'"><em>Usado no link, no QR code e na mensagem. Deixe vazio para usar a mesma pasta deste painel.</em></label>'
+        + '<label class="pa-f"><span>Endereço da página do colaborador</span><input type="text" id="acPag" value="'+esc(a.pagina||"")+'" placeholder="'+esc(pag)+'"><em>Usado no link, no QR code e na mensagem da chave. Deixe vazio para usar a mesma pasta deste painel.</em></label>'
         + '<div class="pa-f"><span>Meses publicados</span><div class="seg" id="acMeses">'+[1,3,6,12].map(function(m){ return '<button type="button" data-m="'+m+'" class="'+((+a.meses||6)===m?"on":"")+'">'+m+'</button>'; }).join("")+'</div><em>A lista de OS vai só para os 2 meses mais recentes.</em></div>'
       + '</div>'
-      + '<div class="ac-box"><b>Primeira vez</b><ol><li>No Supabase do projeto, abra <b>SQL Editor</b>, cole o script <code>supabase_setup.sql</code> e clique em <b>Run</b>.</li><li>Defina abaixo a sua chave de administrador (mínimo 8 caracteres).</li><li>Gere os códigos e clique em <b>Publicar resultados</b>.</li><li>Suba <code>meus-resultados.html</code> no GitHub, na mesma pasta deste painel.</li></ol>'
-        + '<div class="ac-def"><input type="password" id="acNova" placeholder="nova chave de administrador"><input type="password" id="acAtual" placeholder="chave atual (se estiver trocando)"><button type="button" class="btn btn-sm" id="acDef">Definir chave</button></div>'
+      + '<div class="ac-box"><b>Primeira vez</b><ol><li>No Supabase do projeto, abra <b>SQL Editor</b>, cole o script <code>supabase_setup.sql</code> e clique em <b>Run</b>.</li><li>Defina abaixo a sua senha de administrador (mínimo 8 caracteres).</li><li>Crie as chaves e mande para cada colaborador.</li><li>Suba <code>meus-resultados.html</code> no GitHub, na mesma pasta deste painel.</li></ol>'
+        + '<div class="ac-def"><input type="password" id="acNova" placeholder="nova senha de administrador"><input type="password" id="acAtual" placeholder="senha atual (se estiver trocando)"><button type="button" class="btn btn-sm" id="acDef">Definir senha</button></div>'
       + '</div>'
     + '</div></details>';
 
-  var salvaCh = function(){ var v = document.getElementById("acChave").value; UI.acChave = v; try { sessionStorage.setItem("acChave", v); } catch(e){} return v; };
+  var salvaCh = function(){ var v = document.getElementById("acChave").value; if (typeof nuvemGuardaChave==="function") nuvemGuardaChave(v, document.getElementById("acLembra").checked); else UI.acChave = v; return v; };
+  document.getElementById("acLembra").onchange = salvaCh;
+  document.getElementById("acChave").onchange = salvaCh;
+  var novo = function(){
+    var v = A.normKey(document.getElementById("acNovoNome").value); if (!v){ A.toast("Digite o nome do colaborador.", "err"); return; }
+    var achou = pessoas.filter(function(n){ return A.normKey(n)===v; })[0];
+    if (!achou){ var cs = pessoas.filter(function(n){ return A.normKey(n).indexOf(v)!==-1; }); if (cs.length===1) achou = cs[0]; else { A.toast(cs.length ? "Mais de um nome parecido — escolha na lista." : "Nome não encontrado.", "err"); return; } }
+    salvaCh(); chaveCriar(achou, function(){ if (STATE.currentPage==="acesso") renderAcesso(); });
+  };
+  document.getElementById("acNovoBtn").onclick = novo;
+  document.getElementById("acNovoNome").addEventListener("keydown", function(e){ if (e.key==="Enter") novo(); });
   var verificar = function(silencioso){
-    var ch = salvaCh(); if (!ch){ if (!silencioso) A.toast("Informe a chave de administrador.", "err"); return; }
+    var ch = salvaCh(); if (!ch){ if (!silencioso) A.toast("Informe a senha do administrador.", "err"); return; }
     var bv = document.getElementById("acVer"); if (bv) bv.classList.add("girando");
     acessoStatus(ch).then(function(s){ if (!silencioso) A.toast("Verificado · "+fmtInt(s.total)+" pessoa(s) publicadas no Supabase", "ok"); if (STATE.currentPage==="acesso") renderAcesso(); })
       .catch(function(err){ if (bv) bv.classList.remove("girando"); A.toast("Supabase: "+err.message, "err"); });
@@ -6503,24 +6640,29 @@ function renderAcesso(){
   document.getElementById("acOrd").onchange = function(e){ UI.acOrd = e.target.value; renderAcesso(); };
   document.getElementById("acBusca").addEventListener("input", debounce(function(e){ UI.acBusca = e.target.value; renderAcesso(); var b = document.getElementById("acBusca"); b.focus(); b.setSelectionRange(b.value.length, b.value.length); }, 200));
   var gt = document.getElementById("acGerarTodos");
-  if (gt) gt.onclick = function(){ var n = 0; pessoas.forEach(function(p){ if (!a.codigos[p]){ a.codigos[p] = { codigo:novoCodigo(), criado:new Date().toISOString() }; n++; } }); saveSettings(); A.toast(n+" código(s) gerado(s). Publique para ativar.", "ok"); renderAcesso(); };
+  if (gt) gt.onclick = function(){ var n = 0, nv = []; pessoas.forEach(function(p){ if (!a.codigos[p]){ a.codigos[p] = { codigo:novoCodigo(), criado:new Date().toISOString() }; n++; nv.push(p); } }); saveSettings();
+    var ch = salvaCh(); if (!ch){ A.toast(n+" chave(s) criada(s). Informe a senha e clique em Publicar para ativar.", "ok"); renderAcesso(); return; }
+    A.toast(n+" chave(s) criada(s) · ativando…", "ok"); acessoPublicar(ch, null, nv).then(function(){ return acessoStatus(ch).catch(function(){}); }).then(function(){ A.toast("Chaves ativas.", "ok"); renderAcesso(); }).catch(function(err){ A.toast("Não ativou: "+err.message, "err"); renderAcesso(); }); };
   document.getElementById("acCsv").onclick = function(){
-    var linhas = [["Colaborador","Base","Código","Link direto","Último acesso","Acessos"]].concat(pessoas.filter(function(p){ return a.codigos[p]; }).map(function(p){ var x = sm[p]; return [titleCase(p), employeeArea(p)||"", a.codigos[p].codigo, acessoLink(p), x && x.ultimo_acesso ? new Date(x.ultimo_acesso).toLocaleString("pt-BR") : (st ? "nunca" : ""), x ? x.acessos||0 : ""]; }));
+    var linhas = [["Colaborador","Base","Chave","Link direto","Último acesso","Acessos"]].concat(pessoas.filter(function(p){ return a.codigos[p]; }).map(function(p){ var x = sm[p]; return [titleCase(p), employeeArea(p)||"", a.codigos[p].codigo, acessoLink(p), x && x.ultimo_acesso ? new Date(x.ultimo_acesso).toLocaleString("pt-BR") : (st ? "nunca" : ""), x ? x.acessos||0 : ""]; }));
     var csv = "﻿"+linhas.map(function(l){ return l.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(";"); }).join("\r\n");
-    var bl = new Blob([csv], { type:"text/csv;charset=utf-8" }), u = URL.createObjectURL(bl), ln = document.createElement("a"); ln.href = u; ln.download = "codigos_colaboradores.csv"; document.body.appendChild(ln); ln.click(); setTimeout(function(){ URL.revokeObjectURL(u); ln.remove(); }, 500);
+    var bl = new Blob([csv], { type:"text/csv;charset=utf-8" }), u = URL.createObjectURL(bl), ln = document.createElement("a"); ln.href = u; ln.download = "chaves_colaboradores.csv"; document.body.appendChild(ln); ln.click(); setTimeout(function(){ URL.revokeObjectURL(u); ln.remove(); }, 500);
   };
   document.getElementById("acPrintAll").onclick = function(){
     var ps = vis.filter(function(p){ return a.codigos[p]; }); if (!ps.length){ A.toast("Ninguém com código neste filtro.", "err"); return; }
     var w = window.open("", "_blank"); if (!w){ A.toast("O navegador bloqueou a janela de impressão.", "err"); return; }
-    w.document.write('<!doctype html><meta charset="utf-8"><title>Códigos de acesso</title><style>body{font-family:system-ui,sans-serif;margin:16px;color:#111}.g{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.c{border:1.5px dashed #bbb;border-radius:14px;padding:14px;text-align:center;break-inside:avoid}h3{margin:0 0 2px;font-size:14px}p{margin:0 0 8px;color:#666;font-size:11px}code{display:inline-block;margin-top:6px;font-size:17px;font-weight:800;letter-spacing:.1em;color:#e8490f}<\/style><div class="g">'
+    w.document.write('<!doctype html><meta charset="utf-8"><title>Chaves de acesso</title><style>body{font-family:system-ui,sans-serif;margin:16px;color:#111}.g{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.c{border:1.5px dashed #bbb;border-radius:14px;padding:14px;text-align:center;break-inside:avoid}h3{margin:0 0 2px;font-size:14px}p{margin:0 0 8px;color:#666;font-size:11px}code{display:inline-block;margin-top:6px;font-size:17px;font-weight:800;letter-spacing:.1em;color:#e8490f}<\/style><div class="g">'
       + ps.map(function(p){ return '<div class="c"><h3>'+esc(titleCase(p))+'</h3><p>'+esc(employeeArea(p)||"")+'</p>'+QR.svg(acessoLink(p), 150, "#111", "#fff")+'<br><code>'+esc(a.codigos[p].codigo)+'</code></div>'; }).join("")
-      + '</div><p style="margin-top:14px">'+esc(pag)+' · código pessoal — não compartilhe.</p><script>setTimeout(function(){print()},300)<\/script>');
+      + '</div><p style="margin-top:14px">'+esc(pag)+' · chave pessoal — não compartilhe.</p><script>setTimeout(function(){print()},300)<\/script>');
     w.document.close();
   };
   el.querySelector(".ac-l").addEventListener("click", function(e){
     var b = e.target.closest("[data-a]"); if (!b) return; var n = b.closest(".ac-r").dataset.n, act = b.dataset.a;
-    if (act==="gerar" || act==="trocar"){ if (act==="trocar" && !confirm("Gerar outro código para "+titleCase(n)+"? O antigo para de funcionar na próxima publicação.")) return; a.codigos[n] = { codigo:novoCodigo(), criado:new Date().toISOString() }; saveSettings(); renderAcesso(); }
-    else if (act==="remover"){ if (!confirm("Tirar o acesso de "+titleCase(n)+"? Vale a partir da próxima publicação.")) return; delete a.codigos[n]; saveSettings(); renderAcesso(); }
+    var republica = function(msg){ var ch = salvaCh(); saveSettings(); renderAcesso(); if (!ch){ A.toast(msg+" Clique em Publicar para valer.", "ok"); return; }
+      acessoPublicar(ch).then(function(){ return acessoStatus(ch).catch(function(){}); }).then(function(){ A.toast(msg, "ok"); if (STATE.currentPage==="acesso") renderAcesso(); }).catch(function(err){ A.toast("Supabase: "+err.message, "err"); }); };
+    if (act==="gerar"){ salvaCh(); chaveCriar(n, function(){ if (STATE.currentPage==="acesso") renderAcesso(); }); }
+    else if (act==="trocar"){ if (!confirm("Trocar a chave de "+titleCase(n)+"? A antiga para de funcionar.")) return; delete a.codigos[n]; salvaCh(); chaveCriar(n, function(){ var ch = acessoSenha(); if (ch) acessoPublicar(ch).then(function(){ return acessoStatus(ch); }).catch(function(){}).then(function(){ if (STATE.currentPage==="acesso") renderAcesso(); }); }); }
+    else if (act==="remover"){ if (!confirm("Tirar o acesso de "+titleCase(n)+"?")) return; delete a.codigos[n]; republica("Acesso de "+titleCase(n)+" removido."); }
     else if (act==="qr") acessoQR(n);
     else if (act==="copiar"){ var t = acessoMsg(n); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){ A.toast("Mensagem copiada", "ok"); }).catch(function(){ prompt("Copie a mensagem:", t); }); }
   });
@@ -6530,12 +6672,12 @@ function renderAcesso(){
   el.querySelectorAll("#acMeses [data-m]").forEach(function(b){ b.onclick = function(){ a.meses = +b.dataset.m; saveSettings(); renderAcesso(); }; });
   document.getElementById("acDef").onclick = function(){
     var nv = document.getElementById("acNova").value, at = document.getElementById("acAtual").value;
-    if (nv.length < 8){ A.toast("A chave precisa ter pelo menos 8 caracteres.", "err"); return; }
-    acessoRpc("admin_configurar", { chave_nova:nv, chave_atual: at || null }).then(function(){ UI.acChave = nv; try { sessionStorage.setItem("acChave", nv); } catch(e){} A.toast("Chave de administrador definida.", "ok"); renderAcesso(); })
+    if (nv.length < 8){ A.toast("A senha precisa ter pelo menos 8 caracteres.", "err"); return; }
+    acessoRpc("admin_configurar", { chave_nova:nv, chave_atual: at || null }).then(function(){ UI.acChave = nv; try { sessionStorage.setItem("acChave", nv); } catch(e){} A.toast("Senha de administrador definida.", "ok"); renderAcesso(); })
       .catch(function(err){ A.toast("Supabase: "+err.message, "err"); });
   };
   document.getElementById("acPub").onclick = function(){
-    var ch = salvaCh(); if (!ch){ A.toast("Informe a chave de administrador.", "err"); return; }
+    var ch = salvaCh(); if (!ch){ A.toast("Informe a senha do administrador.", "err"); return; }
     var bt = this, pg = document.getElementById("acProg"); bt.disabled = true;
     pg.innerHTML = '<i style="width:0%"></i><span>Preparando…</span>';
     acessoPublicar(ch, function(n, t){ pg.innerHTML = '<i style="width:'+(n/t*100).toFixed(0)+'%"></i><span>'+n+' de '+t+'</span>'; })
@@ -6663,13 +6805,14 @@ function nuvemModal(inicio){
     + (ch ? '<div class="nv-st s-'+NUVEM.estado+'"><i></i><span>'+esc({ off:"Desconectado", ok:"Tudo salvo na nuvem", sync:"Salvando…", load:"Baixando…", pend:"Há alterações para salvar", erro:"Erro: "+NUVEM.erro }[NUVEM.estado]||"")+'</span>'+(NUVEM.ultimo ? '<em>última sincronização '+NUVEM.ultimo.toLocaleTimeString("pt-BR").slice(0,5)+'</em>' : '')+'</div>'
         + '<div class="nv-acts"><button type="button" class="btn btn-primary" data-nv="enviar">'+IC('upload','i-sm')+' Salvar tudo agora</button><button type="button" class="btn" data-nv="baixar">'+IC('download','i-sm')+' Baixar da nuvem</button></div>'
         + '<label class="nv-ck"><input type="checkbox" id="nvAuto"'+(nuvemAuto()?" checked":"")+'> Publicar para os colaboradores automaticamente sempre que os dados mudarem</label>'
-        + '<label class="nv-ck"><input type="checkbox" id="nvLembra"'+(lembra?" checked":"")+'> Lembrar a chave neste computador</label>'
+        + '<label class="nv-ck"><input type="checkbox" id="nvLembra"'+(lembra?" checked":"")+'> Lembrar a senha neste computador</label>'
         + '<button type="button" class="btn btn-ghost nv-sair" data-nv="sair">Desconectar este computador</button>'
-      : '<p class="nv-p">'+(inicio ? 'Este navegador ainda não tem dados. ' : '')+'Digite a <b>chave de administrador</b> para carregar os dados guardados na nuvem e salvar automaticamente tudo o que mudar.</p>'
-        + '<input type="password" id="nvChave" placeholder="Chave de administrador" autocomplete="current-password">'
+      : '<p class="nv-p">'+(inicio ? 'Este navegador ainda não tem dados. ' : '')+'Digite a <b>senha do administrador</b> para carregar os dados guardados na nuvem e salvar automaticamente tudo o que mudar.</p>'
+        + '<input type="password" id="nvChave" placeholder="Senha do administrador" autocomplete="current-password">'
         + '<label class="nv-ck"><input type="checkbox" id="nvLembra" checked> Lembrar neste computador (não marque em computador compartilhado)</label>'
-        + '<div class="nv-acts"><button type="button" class="btn btn-primary" data-nv="conectar">Conectar</button><button type="button" class="btn" data-nv="criar" title="Só funciona enquanto nenhuma chave foi criada">Criar esta chave (1ª vez)</button><button type="button" class="btn btn-ghost" data-nv="fechar">Agora não</button></div>'
-        + '<em class="nv-n">Primeira vez? Rode o script <code>supabase_setup.sql</code> no Supabase, digite uma chave nova (mín. 8 caracteres) e clique em <b>Criar esta chave</b>. Guarde-a bem: é ela que abre os dados em qualquer computador.</em>')
+        + '<div class="nv-acts"><button type="button" class="btn btn-primary" data-nv="conectar">Conectar</button><button type="button" class="btn" data-nv="criar" title="Só funciona enquanto nenhuma senha foi criada">Criar esta senha (1ª vez)</button><button type="button" class="btn btn-ghost" data-nv="fechar">Agora não</button></div>'
+        + '<a class="nv-colab" href="'+esc(acessoPagina())+'">'+IC('phone','i-sm')+'<span><b>Sou colaborador</b><em>Tenho uma chave e quero ver os meus resultados</em></span><i>›</i></a>'
+        + '<em class="nv-n">Primeira vez? Rode o script <code>supabase_setup.sql</code> no Supabase, digite uma senha nova (mín. 8 caracteres) e clique em <b>Criar esta senha</b>. Guarde-a bem: é ela que abre os dados em qualquer computador.</em>')
   + '</div>';
   document.body.appendChild(m);
   var fecha = function(){ m.remove(); };
@@ -6689,10 +6832,10 @@ function nuvemModal(inicio){
     }
     else if (a==="criar"){
       var nv = document.getElementById("nvChave").value;
-      if (nv.length < 8){ A.toast("A chave precisa ter pelo menos 8 caracteres.", "err"); return; }
-      if (!confirm("Criar a chave de administrador com o que você digitou?\nGuarde-a bem: sem ela não dá para abrir os dados.")) return;
-      acessoRpc("admin_configurar", { chave_nova:nv, chave_atual:null }).then(function(){ A.toast("Chave criada.", "ok"); m.querySelector('[data-nv="conectar"]').click(); })
-        .catch(function(err){ A.toast(/incorreta/i.test(err.message) ? "Já existe uma chave. Use a chave atual em Conectar." : "Nuvem: "+err.message, "err"); });
+      if (nv.length < 8){ A.toast("A senha precisa ter pelo menos 8 caracteres.", "err"); return; }
+      if (!confirm("Criar a senha de administrador com o que você digitou?\nGuarde-a bem: sem ela não dá para abrir os dados.")) return;
+      acessoRpc("admin_configurar", { chave_nova:nv, chave_atual:null }).then(function(){ A.toast("Senha criada.", "ok"); m.querySelector('[data-nv="conectar"]').click(); })
+        .catch(function(err){ A.toast(/incorreta/i.test(err.message) ? "Já existe uma senha. Use a senha atual em Conectar." : "Nuvem: "+err.message, "err"); });
     }
     else if (a==="enviar"){ fecha(); nuvemEnviar(true); }
     else if (a==="baixar"){ if (confirm("Substituir os dados deste computador pelos da nuvem?")){ fecha(); nuvemBaixar(true).catch(function(err){ A.toast("Nuvem: "+err.message, "err"); }); } }
@@ -6839,31 +6982,40 @@ function renderColaboradores(){
   if (UI.perfil) return renderPerfil(UI.perfil);
   var el = document.getElementById("page-colaboradores");
   var aba = UI.colAba || "cards";
-  var f = currentFilter(), g = Object.assign({}, f, { base:"GERAL" }), mp = metaPct()/100;
-  var pessoas = colabPessoas();
-  var dados = pessoas.map(function(n){
-    var s = employeeSummary(n, g), b = employeeArea(n) || "Sem base", info = (A.painelCfg().lista||[]).length ? A.painelInfo(n) : null;
-    return { nome:n, base:b, os:s.totalOS, prod:s.totalProdutivo, pct:s.pct, dias:s.dias, info:info, off: typeof colabOffEff==="function" ? colabOffEff(n) : false, veic: veicDe(n) };
+  var temPainel = (A.painelCfg().lista||[]).length > 0, cods = acessoCfg().codigos || {};
+  var ultima = {};
+  STATE.records.forEach(function(r){ if (r._fora || r._pdaPend || !r.dataInicio) return; var n = up(r.equipe); if (!ultima[n] || r._t > ultima[n]) ultima[n] = r._t || r.dataInicio.getTime(); });
+  var dados = colabPessoas().map(function(n){
+    var info = temPainel ? A.painelInfo(n) : null;
+    return { nome:n, base: employeeArea(n) || "Sem base", info:info, noPainel: !!info, foto: painelFoto(n), veic: veicDe(n), chave: cods[n] ? cods[n].codigo : "", ult: ultima[n] || 0, off: typeof colabOffEff==="function" ? colabOffEff(n) : false };
   });
   var porBase = {}; dados.forEach(function(d){ porBase[d.base] = (porBase[d.base]||0)+1; });
-  var fb = UI.colBase || "todas", q = up(UI.colBusca||""), ord = UI.colOrd || "pct";
-  var vis = dados.filter(function(d){ return (fb==="todas" || d.base===fb) && (!q || d.nome.indexOf(q)!==-1 || (d.info && String(d.info.matricula||"").indexOf(q)!==-1)); });
-  vis.sort(function(a,b){
-    if (ord==="nome") return a.nome.localeCompare(b.nome, "pt-BR");
-    if (ord==="os") return b.os-a.os;
-    if (ord==="semos") return (a.os>0)-(b.os>0) || a.nome.localeCompare(b.nome, "pt-BR");
-    return (b.os>0)-(a.os>0) || b.pct-a.pct || b.os-a.os;
+  var fb = UI.colBase || "todas", fs = UI.colSit || "todos", q = A.normKey(UI.colBusca||""), ord = UI.colOrd || "nome";
+  var vis = dados.filter(function(d){
+    if (fb!=="todas" && d.base!==fb) return false;
+    if (fs==="semchave" && d.chave) return false; if (fs==="chave" && !d.chave) return false;
+    if (fs==="planilha" && d.noPainel) return false; if (fs==="semveic" && d.veic) return false;
+    if (q && A.normKey(d.nome).indexOf(q)===-1 && !(d.info && String(d.info.matricula||"").indexOf(q)!==-1)) return false;
+    return true;
   });
-  var comOS = dados.filter(function(d){ return d.os>0; }), naMeta = comOS.filter(function(d){ return d.pct>=mp; }).length;
+  vis.sort(function(a,b){
+    if (ord==="base") return a.base.localeCompare(b.base, "pt-BR") || a.nome.localeCompare(b.nome, "pt-BR");
+    if (ord==="ult") return b.ult-a.ult;
+    return a.nome.localeCompare(b.nome, "pt-BR");
+  });
+  var nCarro = dados.filter(function(d){ return d.veic==="carro"; }).length, nMoto = dados.filter(function(d){ return d.veic==="moto"; }).length;
+  var nChave = dados.filter(function(d){ return d.chave; }).length, nPainel = dados.filter(function(d){ return d.noPainel; }).length;
   var bases = Object.keys(porBase).sort(function(a,b){ var ia = BASE_ORDER.indexOf(a), ib = BASE_ORDER.indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib); });
-  var fonte = (A.painelCfg().lista||[]).length ? "lista do Painel de Controle" : "nomes das planilhas";
+  var dt = function(t){ if (!t) return "—"; var d = new Date(t); return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+String(d.getFullYear()).slice(2); };
+  var tel = function(d){ return d.info && d.info.telefone ? String(d.info.telefone) : ""; };
+  var sits = [["todos","Todos"],["chave","Com chave"],["semchave","Sem chave"],["semveic","Sem carro/moto"]].concat(temPainel ? [["planilha","Só na planilha"]] : []);
 
   el.innerHTML =
     '<div class="co-top">'
-      + '<div class="co-k"><div><b>'+fmtInt(dados.length)+'</b><span>colaboradores · '+fonte+'</span></div>'
-        + '<div><b>'+fmtInt(comOS.length)+'</b><span>com OS em '+esc(periodLabel().toLowerCase())+'</span></div>'
-        + '<div class="g"><b>'+fmtInt(naMeta)+'</b><span>na meta ('+Math.round(mp*100)+'%)</span></div>'
-        + '<div><b>'+fmtInt(dados.length - comOS.length)+'</b><span>sem OS no período</span></div></div>'
+      + '<div class="co-k"><div><b>'+fmtInt(dados.length)+'</b><span>colaboradores'+(temPainel ? ' · '+fmtInt(nPainel)+' no Painel' : ' · nomes das planilhas')+'</span></div>'
+        + '<div><b>'+fmtInt(nCarro)+'<small> / '+fmtInt(nMoto)+'</small></b><span>carro / moto</span></div>'
+        + '<div class="g"><b>'+fmtInt(nChave)+'</b><span>com chave de acesso</span></div>'
+        + '<div><b>'+fmtInt(dados.filter(function(d){ return d.foto; }).length)+'</b><span>com foto do Painel</span></div></div>'
       + '<div class="seg co-abas">'+[["cards","Cartões"],["lista","Lista"],["ajustes","Ajustes de base"]].map(function(o){ return '<button type="button" data-aba="'+o[0]+'" class="'+(aba===o[0]?"on":"")+'">'+o[1]+'</button>'; }).join("")+'</div>'
     + '</div>'
     + (aba==="ajustes" ? '<div id="colAjustes"></div>' :
@@ -6872,35 +7024,49 @@ function renderColaboradores(){
         + '<div class="co-chips">'+[["todas","Todas", dados.length]].concat(bases.map(function(b){ return [b, b, porBase[b]]; })).map(function(x){
             return '<button type="button" data-cb="'+esc(x[0])+'" class="'+(fb===x[0]?"on":"")+'">'+(BASE_COLORS_HEX[x[0]] ? '<i style="background:'+BASE_COLORS_HEX[x[0]]+'"></i>' : '')+esc(x[1])+' <em>'+fmtInt(x[2])+'</em></button>';
           }).join("")+'</div>'
-        + '<div class="field"><select id="colOrd">'+[["pct","Maior % produtiva"],["os","Mais OS"],["nome","Nome (A–Z)"],["semos","Sem OS primeiro"]].map(function(o){ return '<option value="'+o[0]+'"'+(ord===o[0]?" selected":"")+'>Ordenar: '+o[1]+'</option>'; }).join("")+'</select></div>'
+        + '<div class="field"><select id="colSit">'+sits.map(function(o){ return '<option value="'+o[0]+'"'+(fs===o[0]?" selected":"")+'>'+o[1]+'</option>'; }).join("")+'</select></div>'
+        + '<div class="field"><select id="colOrd">'+[["nome","Nome (A–Z)"],["base","Base"],["ult","Última OS"]].map(function(o){ return '<option value="'+o[0]+'"'+(ord===o[0]?" selected":"")+'>Ordenar: '+o[1]+'</option>'; }).join("")+'</select></div>'
       + '</div>'
       + (vis.length ? (aba==="cards"
         ? '<div class="co-grid">'+vis.map(function(d, i){
-            var ft = painelFoto(d.nome), cor = BASE_COLORS_HEX[d.base] || "#94a3b8", ok = d.pct>=mp;
-            return '<button type="button" class="co-c'+(d.os?"":" vazio")+(d.off?" off":"")+'" data-n="'+esc(d.nome)+'" style="--cb:'+cor+';animation-delay:'+Math.min(i*18, 400)+'ms">'
-              + '<div class="co-h">'+(ft ? '<img class="co-av" src="'+ft+'" alt="">' : '<span class="co-av">'+esc(initials(d.nome))+'</span>')
-                + '<div class="co-n"><b>'+esc(titleCase(d.nome))+'</b><span><i></i>'+esc(d.base)+(d.info && d.info.cargo ? ' · '+esc(d.info.cargo) : '')+'</span></div>'
-                + (d.veic ? '<span class="co-v" title="'+VEIC[d.veic].nome+'">'+IC(VEIC[d.veic].ic,'i-sm')+'</span>' : '')+'</div>'
-              + (d.os ? '<div class="co-m"><b class="'+(ok?"ok":"")+'">'+fmtPct(d.pct)+'</b><span>produtiva</span></div>'
-                  + '<div class="co-bar2"><i style="width:'+Math.min(100, d.pct/(mp||1)*100).toFixed(0)+'%"></i></div>'
-                  + '<div class="co-f"><span><b>'+fmtInt(d.os)+'</b> OS</span><span><b>'+fmtInt(d.prod)+'</b> produtivas</span><span><b>'+fmtInt(d.dias)+'</b> dias</span></div>'
-                : '<div class="co-sem">Sem OS em '+esc(periodLabel().toLowerCase())+'</div>')
-              + (d.off ? '<em class="co-tag">inativo</em>' : '')
-            + '</button>';
+            var cor = BASE_COLORS_HEX[d.base] || "#94a3b8";
+            return '<div class="co-c'+(d.off?" off":"")+'" data-n="'+esc(d.nome)+'" style="--cb:'+cor+';animation-delay:'+Math.min(i*18, 400)+'ms">'
+              + '<div class="co-h">'+(d.foto ? '<img class="co-av" src="'+d.foto+'" alt="">' : '<span class="co-av">'+esc(initials(d.nome))+'</span>')
+                + '<div class="co-n"><b>'+esc(d.info ? titleCase(d.info.nome) : titleCase(d.nome))+'</b><span><i></i>'+esc(d.base)+(d.info && d.info.cargo ? ' · '+esc(d.info.cargo) : '')+'</span></div></div>'
+              + '<div class="co-d">'
+                + '<div><span>Matrícula</span><b>'+esc(d.info && d.info.matricula ? d.info.matricula : "—")+'</b></div>'
+                + '<div><span>Veículo</span><b>'+(d.veic ? IC(VEIC[d.veic].ic,'i-sm')+VEIC[d.veic].nome : '<em>não definido</em>')+'</b></div>'
+                + '<div><span>Telefone</span><b>'+(tel(d) ? esc(tel(d)) : "—")+'</b></div>'
+                + '<div><span>Última OS</span><b>'+dt(d.ult)+'</b></div>'
+              + '</div>'
+              + '<div class="co-f2">'
+                + (temPainel ? '<span class="co-p '+(d.noPainel?"ok":"")+'">'+(d.noPainel ? IC('check','i-sm')+'No Painel' : 'Só na planilha')+'</span>' : '')
+                + (d.chave ? '<span class="co-p ch" title="Chave de acesso">'+IC('phone','i-sm')+esc(d.chave)+'</span>' : '<button type="button" class="co-p gera" data-chave="'+esc(d.nome)+'">'+IC('plus','i-sm')+'Criar chave</button>')
+                + (d.off ? '<span class="co-p">inativo</span>' : '')
+                + '<button type="button" class="co-perf" data-perfil="'+esc(d.nome)+'">Perfil ›</button>'
+              + '</div>'
+            + '</div>';
           }).join("")+'</div>'
-        : '<div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table><thead><tr><th>Colaborador</th><th>Base</th><th>Veículo</th><th class="num">OS</th><th class="num">Produtivas</th><th class="num">% produtiva</th><th class="num">Dias</th><th></th></tr></thead><tbody>'
-          + vis.map(function(d){ return '<tr class="clickable" data-n="'+esc(d.nome)+'"><td>'+avatarNameCell(d.nome)+'</td><td><span class="base-chip"><span class="sw" style="background:'+(BASE_COLORS_HEX[d.base]||"#94a3b8")+'"></span>'+esc(d.base)+'</span></td><td>'+veicBadge(d.nome)+'</td>'
-              + '<td class="num">'+(d.os ? fmtInt(d.os) : '—')+'</td><td class="num">'+(d.os ? fmtInt(d.prod) : '—')+'</td><td class="num strong" style="color:'+(d.os && d.pct>=mp ? "var(--good)" : "var(--text-primary)")+'">'+(d.os ? fmtPct(d.pct) : '—')+'</td><td class="num">'+(d.os ? fmtInt(d.dias) : '—')+'</td><td class="num" style="color:var(--text-muted)">›</td></tr>'; }).join("")
+        : '<div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table><thead><tr><th>Colaborador</th><th>Base</th><th>Cargo</th><th>Matrícula</th><th>Telefone</th><th>Veículo</th><th>Chave</th><th>Última OS</th>'+(temPainel ? '<th>Painel</th>' : '')+'</tr></thead><tbody>'
+          + vis.map(function(d){ return '<tr class="clickable" data-perfil="'+esc(d.nome)+'"><td>'+avatarNameCell(d.nome)+'</td><td><span class="base-chip"><span class="sw" style="background:'+(BASE_COLORS_HEX[d.base]||"#94a3b8")+'"></span>'+esc(d.base)+'</span></td>'
+              + '<td>'+esc(d.info && d.info.cargo || "—")+'</td><td>'+esc(d.info && d.info.matricula || "—")+'</td><td>'+esc(tel(d) || "—")+'</td><td>'+veicBadge(d.nome)+'</td>'
+              + '<td>'+(d.chave ? '<code class="co-code">'+esc(d.chave)+'</code>' : '<span class="muted">—</span>')+'</td><td>'+dt(d.ult)+'</td>'
+              + (temPainel ? '<td>'+(d.noPainel ? '<span class="badge badge-success">sim</span>' : '<span class="badge">não</span>')+'</td>' : '')+'</tr>'; }).join("")
           + '</tbody></table></div></div>')
         : '<div class="card empty-state">Ninguém encontrado.</div>'));
 
   el.querySelectorAll(".co-abas [data-aba]").forEach(function(b){ b.onclick = function(){ UI.colAba = b.dataset.aba; renderColaboradores(); }; });
+  el.onclick = null;
   if (aba==="ajustes"){ renderColabAjustes(document.getElementById("colAjustes")); return; }
   el.querySelectorAll("[data-cb]").forEach(function(b){ b.onclick = function(){ UI.colBase = b.dataset.cb; renderColaboradores(); }; });
   document.getElementById("colOrd").onchange = function(e){ UI.colOrd = e.target.value; renderColaboradores(); };
+  document.getElementById("colSit").onchange = function(e){ UI.colSit = e.target.value; renderColaboradores(); };
   var bs = document.getElementById("colBusca");
   bs.addEventListener("input", debounce(function(){ UI.colBusca = bs.value; renderColaboradores(); var b2 = document.getElementById("colBusca"); b2.focus(); b2.setSelectionRange(b2.value.length, b2.value.length); }, 200));
-  el.addEventListener("click", function(e){ var c = e.target.closest("[data-n]"); if (c && el.contains(c)) abrirPerfil(c.dataset.n); });
+  el.onclick = function(e){
+    var g = e.target.closest("[data-chave]"); if (g){ e.stopPropagation(); chaveCriar(g.dataset.chave, function(){ renderColaboradores(); }); return; }
+    var c = e.target.closest("[data-perfil]"); if (c && el.contains(c)) abrirPerfil(c.dataset.perfil);
+  };
   applyBlur();
 }
 
@@ -12307,5 +12473,6 @@ document.addEventListener("DOMContentLoaded", init);
   <button type="button" data-bn="colaboradores"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19c.7-3 2.9-4.6 5.5-4.6s4.8 1.6 5.5 4.6"/><circle cx="16.5" cy="9.5" r="2.5"/><path d="M15.5 14.6c2.3-.2 4.3 1.2 5 4.4"/></svg>Equipe</button>
   <button type="button" data-bn="__menu"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
 </nav>
+<script>document.addEventListener("click",function(e){var i=e.target;if(i&&i.tagName==="INPUT"&&(i.type==="date"||i.type==="month")&&i.showPicker){try{i.showPicker();}catch(x){}}});</script>
 </body>
 </html>
