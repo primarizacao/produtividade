@@ -2352,6 +2352,18 @@ body.pres-on{overflow:hidden;}
 .ac-qri.sm{width:150px;height:150px;margin:8px auto 14px;} .ac-qri.sm svg{width:150px;height:150px;}
 @media (max-width:640px){ .ac-novo{flex-direction:column;} .ch-cod code{font-size:30px;} }
 .ch-m .btn{text-decoration:none;}
+.ac-us-k{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px;}
+.ac-us-k div{padding:12px 14px;border-radius:14px;background:rgba(var(--ink),.035);border:1px solid var(--border);}
+.ac-us-k b{display:block;font-size:26px;font-weight:700;letter-spacing:-.03em;color:var(--text-primary);line-height:1.1;} .ac-us-k div:first-child b{color:var(--brand);}
+.ac-us-k span{font-size:11.5px;color:var(--text-muted);}
+.ac-us-g{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(220px,1fr);gap:18px;align-items:start;}
+.ac-us-ch{width:100%;height:auto;display:block;} .ac-us-ch text{font-size:10px;fill:var(--text-muted);font-family:inherit;}
+.ac-us-t{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+.ac-us-r{position:relative;display:flex;justify-content:space-between;gap:8px;padding:6px 9px;border-radius:8px;font-size:12.5px;overflow:hidden;margin-bottom:4px;}
+.ac-us-r i{position:absolute;left:0;top:0;bottom:0;background:var(--brand-soft);z-index:0;border-radius:8px;} .ac-us-r span, .ac-us-r b{position:relative;z-index:1;} .ac-us-r span{color:var(--text-secondary);} .ac-us-r b{color:var(--text-primary);}
+.ac-us-e{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:5px 2px;border-bottom:1px solid var(--border);} .ac-us-e span{color:var(--text-secondary);} .ac-us-e em{font-style:normal;color:var(--text-muted);font-size:11.5px;white-space:nowrap;}
+.ac-us-v{font-size:12px;color:var(--text-muted);padding:4px 0;}
+@media (max-width:900px){ .ac-us-g{grid-template-columns:1fr;} .ac-us-k{grid-template-columns:repeat(2,minmax(0,1fr));} }
 /* ===== Nuvem ===== */
 .tb-nuvem{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--border-strong);background:var(--surface-1);color:var(--text-secondary);font:600 12.5px/1 inherit;font-family:inherit;cursor:pointer;order:1;white-space:nowrap;}
 .tb-nuvem svg{width:16px;height:16px;}
@@ -6371,7 +6383,8 @@ function acessoPessoas(){
 }
 /* números de uma pessoa, mês a mês — só dela, sem nomes de colegas */
 function acessoDados(nome, meses, cacheMes){
-  var mp = metaPct(), out = { meta:mp, janela:{ ini:horLim().iniTxt, fim:horLim().fimTxt }, meses:[] };
+  if (!acessoDados._ate){ var mx = 0; STATE.records.forEach(function(r){ if (r.dataInicio && !r._fora){ var t = r.dataInicio.getTime(); if (t > mx) mx = t; } }); acessoDados._ate = mx ? dateToISO(new Date(mx)) : ""; setTimeout(function(){ acessoDados._ate = null; }, 0); }
+  var mp = metaPct(), out = { meta:mp, janela:{ ini:horLim().iniTxt, fim:horLim().fimTxt }, meses:[], ate: acessoDados._ate, foto: (typeof painelFoto==="function" ? painelFoto(nome) : "") || "", cargo: (function(){ var i = (A.painelCfg().lista||[]).length ? A.painelInfo(nome) : null; return i && i.cargo ? i.cargo : ""; })() };
   meses.forEach(function(p, mi){
     var C = cacheMes(p), e = employeeSummary(nome, C.f);
     if (!e.totalOS) return;
@@ -6453,7 +6466,7 @@ function acessoStatus(chave){
     return Promise.all(nomes.map(function(n){ return acessoHash(a.codigos[n].codigo); })).then(function(hs){
       var map = {}, usados = {};
       nomes.forEach(function(n, i){ var x = porHash[hs[i]]; if (x){ map[n] = x; usados[hs[i]] = 1; } });
-      UI.acStatus = { em: Date.now(), map: map, total: lista.length, orfaos: lista.filter(function(x){ return !usados[x.hash]; }).length, ok:true };
+      UI.acStatus = { em: Date.now(), map: map, total: lista.length, dias: st.dias || [], recentes: st.recentes || [], totalLog: st.total_log || 0, lista: lista, orfaos: lista.filter(function(x){ return !usados[x.hash]; }).length, ok:true };
       return UI.acStatus;
     });
   });
@@ -6527,6 +6540,40 @@ function chaveModal(n, nova){
     else if (b.dataset.q==="abrir") window.open(link, "_blank", "noopener");
   });
 }
+function acessoUsoCard(st){
+  if (!st) return "";
+  var hoje = new Date(), iso = function(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+  var porDia = {}; (st.dias||[]).forEach(function(x){ porDia[x.dia] = x; });
+  var serie = []; for (var i=29; i>=0; i--){ var d = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()-i), k = iso(d); serie.push({ d:d, k:k, n: porDia[k] ? porDia[k].n : 0, p: porDia[k] ? porDia[k].pessoas : 0 }); }
+  var soma = function(n){ return serie.slice(-n).reduce(function(a,x){ return a+x.n; }, 0); };
+  var totalAc = (st.lista||[]).reduce(function(a,x){ return a+(x.acessos||0); }, 0);
+  var mx = Math.max.apply(null, serie.map(function(x){ return x.n; }).concat([1]));
+  var W = 620, H = 150, pt = 10, pb = 22, ih = H-pt-pb, step = (W-8)/serie.length, bw = Math.max(5, Math.min(13, step*.56));
+  var svg = '<svg viewBox="0 0 '+W+' '+H+'" class="ac-us-ch">';
+  serie.forEach(function(x, j){
+    var X = 4+step*j+(step-bw)/2, h = x.n ? Math.max(bw, ih*x.n/mx) : 0;
+    svg += '<rect x="'+X.toFixed(1)+'" y="'+pt+'" width="'+bw+'" height="'+ih+'" rx="'+(bw/2)+'" fill="rgba(var(--ink),.045)"/>';
+    if (h) svg += '<rect x="'+X.toFixed(1)+'" y="'+(pt+ih-h).toFixed(1)+'" width="'+bw+'" height="'+h.toFixed(1)+'" rx="'+(bw/2)+'" fill="url(#acUsG)"><title>'+fmtDateBR(x.d)+' · '+x.n+' entrada(s) · '+x.p+' pessoa(s)</title></rect>';
+    if (j%5===4 || j===serie.length-1) svg += '<text x="'+(X+bw/2).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle">'+String(x.d.getDate()).padStart(2,"0")+'/'+String(x.d.getMonth()+1).padStart(2,"0")+'</text>';
+  });
+  svg += '<defs><linearGradient id="acUsG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ff5a1f"/></linearGradient></defs></svg>';
+  var top = (st.lista||[]).filter(function(x){ return x.acessos; }).sort(function(a,b){ return b.acessos-a.acessos; }).slice(0, 5), tmx = top.length ? top[0].acessos : 1;
+  return '<div class="card ac-uso">'+cardHead("Utilização", "entradas dos colaboradores na página de resultados · últimos 30 dias")
+    + '<div class="ac-us-k">'
+      + '<div><b>'+fmtInt(soma(1))+'</b><span>hoje</span></div>'
+      + '<div><b>'+fmtInt(soma(7))+'</b><span>últimos 7 dias</span></div>'
+      + '<div><b>'+fmtInt(soma(30))+'</b><span>últimos 30 dias</span></div>'
+      + '<div><b>'+fmtInt(Math.max(totalAc, st.totalLog||0))+'</b><span>entradas no total</span></div>'
+    + '</div>'
+    + '<div class="ac-us-g"><div>'+svg+'</div>'
+      + '<div class="ac-us-side">'
+        + '<div class="ac-us-t">Quem mais acessa</div>'
+        + (top.length ? top.map(function(x){ return '<div class="ac-us-r"><span>'+esc(titleCase(x.nome||""))+'</span><b>'+fmtInt(x.acessos)+'</b><i style="width:'+(x.acessos/tmx*100).toFixed(0)+'%"></i></div>'; }).join("") : '<div class="ac-us-v">Ninguém entrou ainda.</div>')
+        + '<div class="ac-us-t" style="margin-top:12px;">Últimas entradas</div>'
+        + ((st.recentes||[]).length ? st.recentes.slice(0, 6).map(function(x){ return '<div class="ac-us-e"><span>'+esc(titleCase(x.nome||""))+'</span><em>'+acessoQuando(x.em)+'</em></div>'; }).join("") : '<div class="ac-us-v">—</div>')
+      + '</div></div>'
+  + '</div>';
+}
 function renderAcesso(){
   var el = document.getElementById("page-acesso");
   var a = acessoCfg(), pessoas = acessoPessoas(), q = A.normKey(UI.acBusca||"");
@@ -6578,6 +6625,7 @@ function renderAcesso(){
     + (!st ? '<div class="note">'+IC('alert','i-sm')+ ' Digite a senha do administrador e clique em <b>Verificar</b> para ver quem já está publicado, o último acesso e quantas vezes cada um entrou.</div>' : '')
     + (st && st.orfaos ? '<div class="note">'+IC('alert','i-sm')+' '+fmtInt(st.orfaos)+' chave(s) antiga(s) ainda ativa(s) no Supabase — somem na próxima publicação.</div>' : '')
 
+    + acessoUsoCard(st)
     + '<div class="card">'+cardHead("Painel de verificação", (A.painelCfg().lista||[]).length ? "lista do Painel de Controle · clique no QR para mostrar ou imprimir" : "colaboradores das planilhas (conecte o Painel em Nomes & PDA para usar a lista oficial)")
       + '<div class="ac-tool">'
         + '<div class="search-input-wrap"><span class="sic">'+IC('search')+'</span><input type="search" id="acBusca" placeholder="Buscar..." value="'+esc(UI.acBusca||"")+'"></div>'
