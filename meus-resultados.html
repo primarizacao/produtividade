@@ -204,6 +204,9 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
   var SUPA_KEY = "sb_publishable_aerEOTzn00D38NOA0KtIuA_2YmZ1zOE";
 
   var app = document.getElementById("app"), D = null, MI = 0, TAB = "resumo";
+  var EMP = (function(){ try { var m = location.search.match(/[?&]empresa=([a-z0-9]+)/i); return m ? m[1].toLowerCase() : ""; } catch(e){ return ""; } })();
+  var EMPN = function(){ return EMP==="etypa" ? "ETYPA" : (EMP ? EMP.toUpperCase() : "Primarização"); };
+  try { document.title = EMPN()+" · Produtividade"; } catch(e){}
   var IC = {
     logo:'<path d="M3.6 12h3.6l2-5.4 3.4 10.8 2.2-5.4h5.6"/>',
     lock:'<rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.5 10.5V7.8a3.5 3.5 0 0 1 7 0v2.7"/>',
@@ -239,7 +242,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
   function telaCodigo(msg){
     app.className = "wrap";
     app.innerHTML = '<div class="lg2-bg"></div><div class="lg2">'
-      + '<div class="lg2-top"><span class="lg">'+ic("logo")+'</span><div><b>Primarização</b><span>Produtividade</span></div><button class="ib" id="tm" type="button" aria-label="Trocar tema">'+ic(tema()==="light"?"lua":"sol")+'</button></div>'
+      + '<div class="lg2-top"><span class="lg">'+ic("logo")+'</span><div><b>'+esc(EMPN())+'</b><span>Produtividade</span></div><button class="ib" id="tm" type="button" aria-label="Trocar tema">'+ic(tema()==="light"?"lua":"sol")+'</button></div>'
       + '<form class="lg2-card" id="f" autocomplete="off">'
         + '<label class="t" for="c">Chave de acesso</label>'
         + '<div class="cx" id="cx"><i></i><i></i><i></i><u></u><i></i><i></i><i></i><input id="c" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="7" aria-label="Chave"></div>'
@@ -323,7 +326,8 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
     var m = meses[MI];
     var ate = dd.ate || (function(){ var u = meses[meses.length-1]; return u && u.serie && u.serie.length ? u.serie[u.serie.length-1][0] : ""; })();
     var ateP = ate ? ate.split("-").map(Number) : null;
-    var h = '<div class="brand"><span class="lg">'+ic("logo")+'</span><div><b>Primarização</b><span>Produtividade</span></div><button class="ib" id="tm" aria-label="Trocar tema">'+ic(tema()==="light"?"lua":"sol")+'</button></div>'
+    if (D && D.empresa) EMP = D.empresa;
+    var h = '<div class="brand"><span class="lg">'+ic("logo")+'</span><div><b>'+esc(EMPN())+'</b><span>Produtividade</span></div><button class="ib" id="tm" aria-label="Trocar tema">'+ic(tema()==="light"?"lua":"sol")+'</button></div>'
       + '<div class="perfil"><div class="ft">'+(dd.foto ? '<img src="'+esc(dd.foto)+'" alt="">' : esc(ini))+'</div><div><h2>'+esc(nome)+'</h2><p>'+esc([dd.cargo, D.base].filter(Boolean).join(" · ") || nome)+'</p></div></div>'
       + (ate ? '<div class="ate"><span class="pul"></span><span>Dados até <b>'+dBR(ate)+'/'+ateP[0]+'</b> ('+dow(ate).toLowerCase()+')</span>'+(at ? '<em>publicado em<br>'+at.toLocaleDateString("pt-BR")+' '+at.toTimeString().slice(0,5)+'</em>' : '')+'</div>' : '');
     if (!m){ app.innerHTML = h + '<div class="card vz">Ainda não há resultados publicados para você.</div>' + rodape(); liga(); return; }
@@ -409,7 +413,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stro
         + os.map(function(o){ return '<div class="osr"><span class="h">'+esc(o[1])+'</span><div class="d"><b>OS '+esc(o[2])+'</b><span>'+esc(o[3])+'</span></div><span class="r '+(o[5]?"p":"n")+'">'+esc(o[4])+'</span></div>'; }).join("")+'</details>';
     }).join("") : '<div class="vz">Nenhuma OS encontrada.</div>';
   }
-  function rodape(){ return '<div class="nshare">'+ic("lock")+'Resultados pessoais. Não compartilhe a chave nem prints.</div><button class="sair" id="sa">'+ic("sair")+' Sair deste celular</button><div class="foot">Primarização · Produtividade</div>'; }
+  function rodape(){ return '<div class="nshare">'+ic("lock")+'Resultados pessoais. Não compartilhe a chave nem prints.</div><button class="sair" id="sa">'+ic("sair")+' Sair deste celular</button><div class="foot">'+esc(EMPN())+' · Produtividade</div>'; }
   function liga(){
     var t = document.getElementById("tm"); if (t) t.onclick = trocaTema;
     var s = document.getElementById("sa"); if (s) s.onclick = function(){ try { localStorage.removeItem("mr_cod"); } catch(e){} D = null; telaCodigo(); };
