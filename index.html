@@ -2682,6 +2682,7 @@ body.pres-on{overflow:hidden;}
 .mp-fora button:hover{border-color:var(--brand);color:var(--brand);}
 .mp-tl image.osm{filter:invert(1) hue-rotate(180deg) brightness(.75) contrast(.9);}
 :root[data-theme="light"] .mp-tl image.osm{filter:none;}
+.mp-tl image{opacity:.8;} .mp-tl image.ref{opacity:.9;} :root[data-theme="light"] .mp-tl image{opacity:.85;}
 :root{ --ac:#2f6bff; --ac2:#5b8cff; --ac3:#1d4ed8; --ac-rgb:47,107,255; --ac2-rgb:91,140,255; }
 :root[data-emp="etypa"]{ --ac:#e5252a; --ac2:#f05252; --ac3:#b91c1c; --ac-rgb:229,37,42; --ac2-rgb:240,82,82; }
 </style>
@@ -7728,15 +7729,18 @@ function mapaSvg(D, valor, opts){
 function mapaTiles(){
   var G = MAPA_SETORES.geo; if (!G) return "";
   var RR = 6378137, W = 2*Math.PI*RR, M = MAPA_SETORES;
-  var tema = document.documentElement.getAttribute("data-theme")==="light" ? "light_all" : "dark_all";
+  var claro = document.documentElement.getAttribute("data-theme")==="light";
+  var ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_"+(claro ? "Light" : "Dark")+"_Gray_";
   var camada = function(z, x0, y0, x1, y1, cls){
-    var n = Math.pow(2, z), tw = W/n*G.s, o = "";
+    var n = Math.pow(2, z), tw = W/n*G.s, o = "", rot = "";
     var tx = function(x){ return Math.floor(((x - G.gx)/G.s + Math.PI*RR)/W*n); }, ty = function(y){ return Math.floor((Math.PI*RR - (G.gy - y)/G.s)/W*n); };
     for (var i=tx(x0); i<=tx(x1); i++) for (var j=ty(y0); j<=ty(y1); j++){
       var X = (-Math.PI*RR + i*W/n)*G.s + G.gx, Y = -(Math.PI*RR - j*W/n)*G.s + G.gy;
-      o += '<image onerror="mapaTileErro(this)" data-t="'+z+'/'+i+'/'+j+'" href="https://'+"abcd".charAt((i+j)%4)+'.basemaps.cartocdn.com/'+tema+'/'+z+'/'+i+'/'+j+'.png" x="'+X.toFixed(1)+'" y="'+Y.toFixed(1)+'" width="'+(tw+0.6).toFixed(1)+'" height="'+(tw+0.6).toFixed(1)+'" preserveAspectRatio="none"/>';
+      var pos = ' x="'+X.toFixed(1)+'" y="'+Y.toFixed(1)+'" width="'+(tw+0.6).toFixed(1)+'" height="'+(tw+0.6).toFixed(1)+'" preserveAspectRatio="none"';
+      o += '<image onerror="mapaTileErro(this)" data-t="'+z+'/'+i+'/'+j+'" href="'+ESRI+'Base/MapServer/tile/'+z+'/'+j+'/'+i+'"'+pos+'/>';
+      rot += '<image class="ref" onerror="this.style.display=\'none\'" href="'+ESRI+'Reference/MapServer/tile/'+z+'/'+j+'/'+i+'"'+pos+'/>';
     }
-    return '<g class="'+cls+'">'+o+'</g>';
+    return '<g class="'+cls+'">'+o+rot+'</g>';
   };
   /* longe: cidade inteira (z11); perto: área dos setores com mais detalhe (z13) */
   return camada(11, -M.w*1.6, -M.h*1.6, M.w*2.6, M.h*2.6, "mp-tl")
@@ -7879,7 +7883,7 @@ function renderMapaSucesso(){
     + '<div class="mp-wrap"><div class="card mp-map">'
       + '<div class="mp-mh"><span class="mp-ttl">'+IC('mapPin','i-sm')+'Mapa dos setores</span><button type="button" class="mp-edbtn'+(E.edit?" on":"")+'" id="mpEdit">'+IC(E.edit ? 'check' : 'pencil','i-sm')+(E.edit ? 'Concluir correções' : 'Corrigir setores')+'</button><div class="mp-leg"><span>'+(E.met==="vol" ? "menos OS" : pp(pmin))+'</span><i></i><span>'+(E.met==="vol" ? "mais OS" : pp(pmax))+'</span></div></div>'
       + '<div class="mp-box'+(E.edit?" ed":"")+'" id="mpBox">'+mapaSvg(D, valor, { sel:E.sel, top: E.met==="pct" && !E.edit ? top.slice(0, 5) : null, edit:E.edit })
-        + '<div class="mp-osm">© OpenStreetMap · © CARTO</div><div class="mp-zm"><button type="button" data-zoom="+">+</button><button type="button" data-zoom="-">−</button><button type="button" data-zoom="0" title="Ver tudo">⤢</button></div><div class="mp-tt" hidden></div></div>'
+        + '<div class="mp-osm">© Esri · © OpenStreetMap</div><div class="mp-zm"><button type="button" data-zoom="+">+</button><button type="button" data-zoom="-">−</button><button type="button" data-zoom="0" title="Ver tudo">⤢</button></div><div class="mp-tt" hidden></div></div>'
     + '</div><aside class="card mp-sd">'+lado+'</aside></div>';
 
   var box = document.getElementById("mpBox"), tip = mapaTooltip(box);
@@ -7942,7 +7946,7 @@ function renderMapaEquipe(){
       + '<div class="mp-mh"><span class="mp-ttl">'+IC('mapPin','i-sm')+(E.modo==="setor" ? 'Quem mais faz cada setor' : 'Setores de '+esc(titleCase(E.pessoa||"")))+'</span>'
         + (E.modo==="setor" ? '<div class="mp-leg2">'+pessoas.slice(0, 6).map(function(p){ return '<span><i style="background:'+donoCor[p.n]+'"></i>'+esc(titleCase(p.n).split(" ")[0])+'</span>'; }).join("")+'</div>' : '<div class="mp-leg"><span>poucas OS</span><i></i><span>muitas OS</span></div>')+'</div>'
       + '<div class="mp-box" id="mpBox">'+mapaSvg(D, valor, { sel:E.sel, cor:cor })
-        + '<div class="mp-osm">© OpenStreetMap · © CARTO</div><div class="mp-zm"><button type="button" data-zoom="+">+</button><button type="button" data-zoom="-">−</button><button type="button" data-zoom="0" title="Ver tudo">⤢</button></div><div class="mp-tt" hidden></div></div>'
+        + '<div class="mp-osm">© Esri · © OpenStreetMap</div><div class="mp-zm"><button type="button" data-zoom="+">+</button><button type="button" data-zoom="-">−</button><button type="button" data-zoom="0" title="Ver tudo">⤢</button></div><div class="mp-tt" hidden></div></div>'
     + '</div><aside class="card mp-sd">'+lado+'</aside></div>';
   var box = document.getElementById("mpBox"), tip = mapaTooltip(box);
   mapaInterativo(box, function(sid){ if (E.modo==="pessoa"){ E.modo = "setor"; } E.sel = sid && sid!==E.sel ? sid : null; renderMapaEquipe(); }, function(sid, ev){
