@@ -2665,6 +2665,23 @@ body.pres-on{overflow:hidden;}
 .mp-s.vz{fill:rgba(var(--ink),.05) !important;}
 .mp-osm{position:absolute;right:58px;bottom:12px;font-size:10px;color:var(--text-muted);background:color-mix(in srgb, var(--surface-1) 80%, transparent);padding:2px 7px;border-radius:6px;pointer-events:none;}
 .mp-res select{height:32px;max-width:260px;border-radius:99px;font-size:12px;font-weight:600;}
+
+.mp-edbtn{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:9px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text-primary);font:600 12px/1 inherit;font-family:inherit;cursor:pointer;}
+.mp-edbtn:hover{border-color:var(--brand);} .mp-edbtn.on{background:var(--brand);border-color:var(--brand);color:#fff;} .mp-edbtn.on svg{stroke:#fff;}
+.mp-box.ed .mp-s{cursor:crosshair;}
+.mp-s.semn{stroke:#f5a524 !important;stroke-dasharray:8 6;stroke-width:3;}
+.mp-s.edt{stroke:var(--good, #22c55e) !important;stroke-width:3;}
+.mp-box.ed .mp-n{opacity:1;}
+.mp-ed{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:14px;border:1px solid var(--brand);background:var(--brand-soft-2, rgba(var(--ac-rgb),.06));margin-bottom:6px;}
+.mp-edf{display:flex;flex-direction:column;gap:5px;} .mp-edf span{font-size:11px;font-weight:600;color:var(--text-muted);} .mp-edf input, .mp-edf select{height:38px;}
+.mp-edf input{font-size:16px;font-weight:700;letter-spacing:.03em;}
+.mp-edb{display:flex;gap:6px;flex-wrap:wrap;}
+.mp-fora{display:flex;flex-wrap:wrap;gap:6px;}
+.mp-fora button{height:28px;padding:0 10px;border-radius:8px;border:1px dashed var(--border-strong);background:none;color:var(--text-primary);font:700 12px/1 inherit;font-family:inherit;cursor:pointer;}
+.mp-fora button em{font-style:normal;font-weight:500;color:var(--text-muted);margin-left:3px;}
+.mp-fora button:hover{border-color:var(--brand);color:var(--brand);}
+.mp-tl image.osm{filter:invert(1) hue-rotate(180deg) brightness(.75) contrast(.9);}
+:root[data-theme="light"] .mp-tl image.osm{filter:none;}
 :root{ --ac:#2f6bff; --ac2:#5b8cff; --ac3:#1d4ed8; --ac-rgb:47,107,255; --ac2-rgb:91,140,255; }
 :root[data-emp="etypa"]{ --ac:#e5252a; --ac2:#f05252; --ac3:#b91c1c; --ac-rgb:229,37,42; --ac2-rgb:240,82,82; }
 </style>
@@ -7608,8 +7625,17 @@ var MAPA_SETORES = {"w":2023,"h":1703,"atcs":[{"id":"915","nome":"Ipiranga","d":
 var MAPA_ATC_COR = { "915":"#22c55e", "917":"#f43f5e", "919":"#a855f7", "947":"#06b6d4", "72":"#f59e0b" };
 var MAPA_BASE_ATC = { IPIRANGA:"915", JARDINS:"917", MOOCA:"919", "SAO MATEUS":"947", "SAO MIGUEL":"947", SM:"947", "SANTO ANDRE":"72" };
 var MAPA = { idx:null, atcBox:{}, view:null };
+function mapaEdits(){ return SETTINGS.mapaEdit || (SETTINGS.mapaEdit = {}); }
+function mapaAplicaEdicoes(){
+  var ed = mapaEdits(); MAPA.atcBox = {};
+  MAPA_SETORES.setores.forEach(function(s){
+    if (s._ns0===undefined){ s._ns0 = s.ns.slice(); s._atc0 = s.atc; }
+    var e = ed[s.id]; s.ns = e ? e.ns.slice() : s._ns0.slice(); s.atc = e && e.atc ? e.atc : s._atc0; s.editado = !!e;
+  });
+}
 function mapaIndice(){
   if (MAPA.idx) return MAPA.idx;
+  mapaAplicaEdicoes();
   var idx = {};
   MAPA_SETORES.setores.forEach(function(s){
     s.ns.forEach(function(n){ (idx[n] = idx[n] || []).push(s); });
@@ -7670,13 +7696,13 @@ function mapaSvg(D, valor, opts){
   M.setores.forEach(function(s){
     var v = valor(s), e = D.porSet[s.id];
     var fill = v==null ? 'rgba(var(--ink),.055)' : (opts.cor ? opts.cor(v, e) : 'rgba(var(--ac-rgb),'+(0.16+0.84*v).toFixed(3)+')');
-    h += '<path d="'+s.d+'" data-sid="'+s.id+'" class="mp-s'+(opts.sel===s.id?" sel":"")+(v==null?" vz":"")+'" style="fill:'+fill+'"/>';
+    h += '<path d="'+s.d+'" data-sid="'+s.id+'" class="mp-s'+(opts.sel===s.id?" sel":"")+(v==null?" vz":"")+(opts.edit && !s.ns.length?" semn":"")+(opts.edit && s.editado?" edt":"")+'" style="fill:'+fill+'"/>';
   });
   M.atcs.forEach(function(a){ h += '<path d="'+a.d+'" class="mp-atc" style="stroke:'+MAPA_ATC_COR[a.id]+'"/>'; });
   if (opts.top) opts.top.forEach(function(e, i){
     h += '<g class="mp-rk" transform="translate('+e.s.cx+' '+e.s.cy+')"><circle r="40" class="mp-halo"/><circle r="17" class="mp-dot"/><text y="6">'+(i+1)+'</text></g>';
   });
-  if (opts.rotulos!==false) M.setores.forEach(function(s){ if (s.ns.length && s.a > 2500) h += '<text class="mp-n" x="'+s.cx+'" y="'+(s.cy+6)+'">'+s.ns[0]+'</text>'; });
+  if (opts.rotulos!==false) M.setores.forEach(function(s){ if (s.ns.length && (opts.edit || s.a > 2500)) h += '<text class="mp-n" x="'+s.cx+'" y="'+(s.cy+6)+'">'+s.ns[0]+'</text>'; });
   h += '</g></svg>';
   return h + '<div class="mp-atcs">'+M.atcs.map(function(a){ return '<span><i style="background:'+MAPA_ATC_COR[a.id]+'"></i>ATC '+a.id+' · '+esc(a.nome)+'</span>'; }).join("")+'</div>';
 }
@@ -7690,7 +7716,7 @@ function mapaTiles(){
     var tx = function(x){ return Math.floor(((x - G.gx)/G.s + Math.PI*RR)/W*n); }, ty = function(y){ return Math.floor((Math.PI*RR - (G.gy - y)/G.s)/W*n); };
     for (var i=tx(x0); i<=tx(x1); i++) for (var j=ty(y0); j<=ty(y1); j++){
       var X = (-Math.PI*RR + i*W/n)*G.s + G.gx, Y = -(Math.PI*RR - j*W/n)*G.s + G.gy;
-      o += '<image href="https://'+"abcd".charAt((i+j)%4)+'.basemaps.cartocdn.com/'+tema+'/'+z+'/'+i+'/'+j+'.png" x="'+X.toFixed(1)+'" y="'+Y.toFixed(1)+'" width="'+(tw+0.6).toFixed(1)+'" height="'+(tw+0.6).toFixed(1)+'" preserveAspectRatio="none"/>';
+      o += '<image onerror="mapaTileErro(this)" data-t="'+z+'/'+i+'/'+j+'" href="https://'+"abcd".charAt((i+j)%4)+'.basemaps.cartocdn.com/'+tema+'/'+z+'/'+i+'/'+j+'.png" x="'+X.toFixed(1)+'" y="'+Y.toFixed(1)+'" width="'+(tw+0.6).toFixed(1)+'" height="'+(tw+0.6).toFixed(1)+'" preserveAspectRatio="none"/>';
     }
     return '<g class="'+cls+'">'+o+'</g>';
   };
@@ -7748,6 +7774,54 @@ function mapaGauge(p){
   return o + '<text x="60" y="66" text-anchor="middle">'+(p*100).toFixed(1).replace(".",",")+'%</text></svg>';
 }
 
+/* ---------- correção manual dos setores ---------- */
+function mapaPainelEdicao(selS, D){
+  var ed = mapaEdits(), nEd = Object.keys(ed).length;
+  var fora = Object.keys(D.foraMapa).sort(function(a,b){ return D.foraMapa[b]-D.foraMapa[a]; });
+  var semN = MAPA_SETORES.setores.filter(function(s){ return !s.ns.length; }).length;
+  var cab = '<div class="mp-sd-h"><b>Corrigir setores</b><span>clique num setor do mapa para mudar o número dele · '+fmtInt(nEd)+' correção(ões) salva(s)</span></div>';
+  var lista = '<div class="mp-sec">SF da planilha sem setor no mapa</div>'
+    + (fora.length ? '<div class="mp-fora">'+fora.slice(0, 40).map(function(k){ return '<button type="button" data-fora="'+esc(String(k).replace(/\D+/g," ").trim().split(" ").pop())+'">'+esc(k)+' <em>'+fmtInt(D.foraMapa[k])+'</em></button>'; }).join("")+'</div>' : '<div class="mp-vz">Todos os SF das OS deste período já batem com algum setor.</div>')
+    + '<div class="mp-vz">'+fmtInt(semN)+' setor(es) do mapa sem número — aparecem tracejados.</div>';
+  if (!selS) return cab + lista + (nEd ? '<button type="button" class="btn btn-sm btn-ghost" id="mpEdZera" style="margin-top:8px">Desfazer todas as correções</button>' : '');
+  var orig = selS._ns0.length ? selS._ns0.join(", ") : "sem número";
+  return cab
+    + '<div class="mp-ed">'
+      + '<div class="mp-sd-t"><span style="background:'+MAPA_ATC_COR[selS.atc]+'"></span><div><b>'+mapaNomeSetor(selS)+'</b><em>leitura original do mapa: '+esc(orig)+(selS.editado ? ' · corrigido' : '')+'</em></div></div>'
+      + '<label class="mp-edf"><span>Número do setor (SF)</span><input type="text" id="mpEdN" inputmode="numeric" value="'+esc(selS.ns.join(", "))+'" placeholder="ex.: 128  (dois números: 128, 129)"></label>'
+      + '<label class="mp-edf"><span>ATC</span><select id="mpEdA">'+MAPA_SETORES.atcs.map(function(a){ return '<option value="'+a.id+'"'+(a.id===selS.atc?" selected":"")+'>ATC '+a.id+' · '+esc(a.nome)+'</option>'; }).join("")+'</select></label>'
+      + '<div class="mp-edb"><button type="button" class="btn btn-sm btn-primary" id="mpEdOk">Salvar</button>'+(selS.editado ? '<button type="button" class="btn btn-sm btn-ghost" id="mpEdOrig">Voltar ao original</button>' : '')+'<button type="button" class="btn btn-sm btn-ghost" id="mpEdX">Cancelar</button></div>'
+    + '</div>' + lista;
+}
+function mapaEdicaoEventos(el, selS, rerender){
+  var salvar = function(ns, atc){
+    var ed = mapaEdits();
+    if (ns===null) delete ed[selS.id]; else ed[selS.id] = { ns:ns, atc:atc };
+    saveSettings(); MAPA.idx = null; rerender();
+  };
+  el.querySelectorAll("[data-fora]").forEach(function(b){ b.onclick = function(){ var i = document.getElementById("mpEdN"); if (i){ i.value = b.dataset.fora; i.focus(); } else A.toast("Clique primeiro no setor do mapa que é o "+b.dataset.fora+".", "ok"); }; });
+  var z = document.getElementById("mpEdZera"); if (z) z.onclick = function(){ if (!confirm("Desfazer todas as correções de setores?")) return; SETTINGS.mapaEdit = {}; saveSettings(); MAPA.idx = null; rerender(); };
+  if (!selS) return;
+  var ok = function(){
+    var v = document.getElementById("mpEdN").value, ns = (v.match(/\d+/g) || []).map(Number).filter(function(n, i, a){ return a.indexOf(n)===i; });
+    var atc = document.getElementById("mpEdA").value;
+    var mesmo = JSON.stringify(ns)===JSON.stringify(selS._ns0) && atc===selS._atc0;
+    salvar(mesmo ? null : ns, atc); A.toast(mesmo ? "Setor voltou ao original" : "Setor salvo como "+(ns.length ? ns.join(" / ") : "sem número"), "ok");
+  };
+  document.getElementById("mpEdOk").onclick = ok;
+  document.getElementById("mpEdN").addEventListener("keydown", function(e){ if (e.key==="Enter") ok(); });
+  var o = document.getElementById("mpEdOrig"); if (o) o.onclick = function(){ salvar(null); };
+  document.getElementById("mpEdX").onclick = function(){ UI.mapaS.sel = null; rerender(); };
+  setTimeout(function(){ var i = document.getElementById("mpEdN"); if (i){ i.focus(); i.select(); } }, 30);
+}
+/* tile que não carregou: tenta o servidor padrão do OpenStreetMap */
+function mapaTileErro(img){
+  if (img.getAttribute("data-osm")) { img.style.display = "none"; return; }
+  img.setAttribute("data-osm", "1"); img.classList.add("osm");
+  img.setAttribute("href", "https://tile.openstreetmap.org/"+img.getAttribute("data-t")+".png");
+}
+try { window.mapaTileErro = mapaTileErro; } catch(e){}
+
 /* ---------- Zona de sucesso ---------- */
 function renderMapaSucesso(){
   var el = document.getElementById("page-mapa-sucesso");
@@ -7764,7 +7838,8 @@ function renderMapaSucesso(){
   var pp = function(x){ return (x*100).toFixed(1).replace(".",",")+"%"; };
   var linha = function(e, i){ return '<button type="button" class="mp-li" data-sid="'+e.s.id+'"><span class="r">'+(i+1)+'</span><div><b>'+mapaNomeSetor(e.s)+'</b><span>ATC '+e.s.atc+' · '+fmtInt(e.os)+' OS</span></div><em>'+pp(e.pct)+'</em><i style="width:'+(e.pct*100).toFixed(0)+'%"></i></button>'; };
 
-  var lado = sel || selS ? (
+  if (E.edit) mapaIndice();
+  var lado = E.edit ? mapaPainelEdicao(selS, D) : sel || selS ? (
       '<div class="mp-sd-h"><button type="button" class="mp-x" id="mpVolta">‹ Visão geral</button></div>'
       + '<div class="mp-sd-t"><span style="background:'+MAPA_ATC_COR[selS.atc]+'"></span><div><b>'+mapaNomeSetor(selS)+'</b><em>ATC '+selS.atc+' · '+esc((MAPA_SETORES.atcs.filter(function(a){ return a.id===selS.atc; })[0]||{}).nome||"")+'</em></div></div>'
       + (sel ? '<div class="mp-gw">'+mapaGauge(sel.pct)+'<div class="mp-gl"><div><i class="p"></i>Sucesso <b>'+fmtInt(sel.prod)+'</b></div><div><i class="n"></i>Sem sucesso <b>'+fmtInt(sel.os-sel.prod)+'</b></div><div><span>Total</span> <b>'+fmtInt(sel.os)+' OS</b></div></div></div>'
@@ -7784,8 +7859,8 @@ function renderMapaSucesso(){
       + '<label class="mp-min">mín. <input type="number" id="mpMin" min="1" max="200" value="'+E.min+'"> OS</label>')
     + mapaSemDados(D)
     + '<div class="mp-wrap"><div class="card mp-map">'
-      + '<div class="mp-mh"><span class="mp-ttl">'+IC('mapPin','i-sm')+'Mapa dos setores</span><div class="mp-leg"><span>'+(E.met==="vol" ? "menos OS" : pp(pmin))+'</span><i></i><span>'+(E.met==="vol" ? "mais OS" : pp(pmax))+'</span></div></div>'
-      + '<div class="mp-box" id="mpBox">'+mapaSvg(D, valor, { sel:E.sel, top: E.met==="pct" ? top.slice(0, 5) : null })
+      + '<div class="mp-mh"><span class="mp-ttl">'+IC('mapPin','i-sm')+'Mapa dos setores</span><button type="button" class="mp-edbtn'+(E.edit?" on":"")+'" id="mpEdit">'+IC(E.edit ? 'check' : 'pencil','i-sm')+(E.edit ? 'Concluir correções' : 'Corrigir setores')+'</button><div class="mp-leg"><span>'+(E.met==="vol" ? "menos OS" : pp(pmin))+'</span><i></i><span>'+(E.met==="vol" ? "mais OS" : pp(pmax))+'</span></div></div>'
+      + '<div class="mp-box'+(E.edit?" ed":"")+'" id="mpBox">'+mapaSvg(D, valor, { sel:E.sel, top: E.met==="pct" && !E.edit ? top.slice(0, 5) : null, edit:E.edit })
         + '<div class="mp-osm">© OpenStreetMap · © CARTO</div><div class="mp-zm"><button type="button" data-zoom="+">+</button><button type="button" data-zoom="-">−</button><button type="button" data-zoom="0" title="Ver tudo">⤢</button></div><div class="mp-tt" hidden></div></div>'
     + '</div><aside class="card mp-sd">'+lado+'</aside></div>';
 
@@ -7801,6 +7876,8 @@ function renderMapaSucesso(){
   el.querySelectorAll(".mp-li").forEach(function(b){ b.onclick = function(){ E.sel = b.dataset.sid; renderMapaSucesso(); }; });
   var mi = document.getElementById("mpMin"); mi.onchange = function(){ E.min = Math.max(1, +mi.value||1); renderMapaSucesso(); };
   var vt = document.getElementById("mpVolta"); if (vt) vt.onclick = function(){ E.sel = null; renderMapaSucesso(); };
+  document.getElementById("mpEdit").onclick = function(){ E.edit = !E.edit; E.sel = null; renderMapaSucesso(); };
+  if (E.edit) mapaEdicaoEventos(el, selS, renderMapaSucesso);
 }
 
 /* ---------- Quem faz cada setor ---------- */
