@@ -3323,11 +3323,11 @@ function persistNewBanco(rows){
   return idbBulkAdd("banco", toChunks(rows, serializeBanco));
 }
 function serializeRecord(r){
-  return { u:r.unidade, o:r.numOS, t:r.tipo||"", la:r.lat, lo:r.lng, ga:r.geoAprox?1:0, en:r.endereco||"", ob:r.obs||"", sf:r.sf||"", fi:r.fin||"", r:r.resultado, c:r.classificacao, e:(r._orig!==undefined ? r._orig : r.equipe), a:r.area,
+  return { u:r.unidade, o:r.numOS, t:r.tipo||"", la:r.lat, lo:r.lng, ga:r.geoAprox?1:0, en:r.endereco||"", ob:r.obs||"", sf:r.sf||"", fi:r.fin||"", ap:r.atcp||"", r:r.resultado, c:r.classificacao, e:(r._orig!==undefined ? r._orig : r.equipe), a:r.area,
     di: r.dataInicio? r.dataInicio.getTime():null, df: r.dataFim? r.dataFim.getTime():null, an:r.ano, me:r.mes };
 }
 function deserializeRecord(o){
-  return { unidade:o.u, numOS:o.o, tipo:o.t||"", lat:o.la!=null?o.la:null, lng:o.lo!=null?o.lo:null, geoAprox:o.ga?1:0, endereco:o.en||"", obs:o.ob||"", sf:o.sf||"", fin:o.fi||"", resultado:o.r, classificacao:o.c, equipe:o.e, area:o.a,
+  return { unidade:o.u, numOS:o.o, tipo:o.t||"", lat:o.la!=null?o.la:null, lng:o.lo!=null?o.lo:null, geoAprox:o.ga?1:0, endereco:o.en||"", obs:o.ob||"", sf:o.sf||"", fin:o.fi||"", atcp:o.ap||"", resultado:o.r, classificacao:o.c, equipe:o.e, area:o.a,
     dataInicio: o.di!=null? new Date(o.di):null, dataFim: o.df!=null? new Date(o.df):null, ano:o.an, mes:o.me };
 }
 function serializeBanco(b){ return { n:(b._orig!==undefined ? b._orig : b.equipe), a:b.area, d:b.day, an:b.ano, me:b.mes, p:b.prim, u:b.ult }; }
@@ -3354,6 +3354,7 @@ function buildRecord(row){
     obs: row.obs ? String(row.obs).replace(/\s+/g," ").trim().slice(0, 600) : "",
     sf: row.sf ? String(row.sf).trim().slice(0, 20) : "",
     fin: row.fin ? String(row.fin).replace(/\s+/g," ").trim().slice(0, 80) : "",
+    atcp: row.atcp ? String(row.atcp).trim().slice(0, 30) : "",
     resultado: row.resultado || "",
     classificacao: classificacao(row.resultado),
     equipe: equipe,
@@ -3890,6 +3891,10 @@ function findGeoCols(headerRow, map){
   if (g.sf>=0) usados[g.sf] = 1;
   /* finalização / resultado de cada TSS: coluna U */
   g.fin = normed.length>20 ? 20 : -1;
+  /* ATC de cada OS: coluna P (ou cabeçalho "ATC") — separa setores que caem em duas ATCs */
+  g.atcp = (normed.length>15 && /\bATC\b/.test(normed[15] || "")) ? 15 : -1;
+  if (g.atcp<0){ for (var qa=0; qa<normed.length; qa++){ if (/^ATC\b/.test(normed[qa])){ g.atcp = qa; break; } } }
+  if (g.atcp<0 && normed.length>15){ var nuc2 = {}; Object.keys(map).forEach(function(kk){ if (map[kk]>=0) nuc2[map[kk]] = 1; }); if (!nuc2[15] && 15!==g.sf) g.atcp = 15; }
   /* observações (pode haver mais de uma coluna: todas são juntadas) */
   g.obs = [];
   var nucleo = {}; Object.keys(map).forEach(function(k){ if (map[k]>=0) nucleo[map[k]] = 1; });
@@ -4002,6 +4007,7 @@ function parseWorkbookExecucao(workbook, fileName){
       lat: gl.lat, lng: gl.lng, endereco: gl.endereco,
       sf: geo.sf>=0 && row[geo.sf]!=null ? String(row[geo.sf]).trim() : "",
       fin: geo.fin>=0 && row[geo.fin]!=null ? String(row[geo.fin]).trim() : "",
+      atcp: geo.atcp>=0 && row[geo.atcp]!=null ? String(row[geo.atcp]).trim() : "",
       obs: (geo.obs||[]).map(function(ix){ var v = row[ix]; return v==null ? "" : String(v).trim(); }).filter(function(v){ return v && v!=="-" && v!=="0"; }).join(" · "),
       unidade: row[map.unidade],
       numOS: row[map.numOS],
@@ -4163,6 +4169,7 @@ function importOneFile(file, type){
           if (r.obs && r.obs!==old.obs){ old.obs = r.obs; mudou = true; }
           if (r.sf && r.sf!==old.sf){ old.sf = r.sf; mudou = true; }
           if (r.fin && r.fin!==old.fin){ old.fin = r.fin; mudou = true; }
+          if (r.atcp && r.atcp!==old.atcp){ old.atcp = r.atcp; mudou = true; }
           if (old.lat==null && r.lat!=null){ old.lat = r.lat; old.lng = r.lng; mudou = true; }
           if (r.endereco && r.endereco!==old.endereco){
             old.endereco = r.endereco; mudou = true;
@@ -7645,12 +7652,23 @@ function mapaIndice(){
   });
   return MAPA.idx = idx;
 }
+/* "ATC 919", "919", "0919", "ATC-72", "Mooca"… -> id da ATC do mapa */
+function mapaAtcDe(v){
+  if (!v) return "";
+  var t = A.normKey(String(v)), g = t.match(/\d+/g), ids = MAPA_SETORES.atcs.map(function(a){ return a.id; });
+  if (g){ for (var i=0;i<g.length;i++){ var n = String(parseInt(g[i],10)); if (ids.indexOf(n)!==-1) return n; } }
+  var achou = ""; MAPA_SETORES.atcs.forEach(function(a){ if (t.indexOf(A.normKey(a.nome))!==-1) achou = a.id; });
+  return achou;
+}
 /* SF da planilha -> polígono do mapa */
 function mapaSetorDe(r){
   if (!r.sf) return null;
   var g = String(r.sf).match(/\d+/g); if (!g) return null;
   var num = parseInt(g[g.length-1], 10), cands = mapaIndice()[num];
   if (!cands) return null;
+  /* ATC da planilha (coluna P) decide quando o setor tem pedaço em mais de uma ATC */
+  var ap = mapaAtcDe(r.atcp);
+  if (ap){ var naAtc = cands.filter(function(s){ return s.atc===ap; })[0]; return naAtc || null; }
   if (cands.length===1) return cands[0];
   if (g.length>1){ var porAtc = cands.filter(function(s){ return s.atc===String(parseInt(g[0],10)); })[0]; if (porAtc) return porAtc; }
   var b = A.normKey(employeeArea(r.equipe) || ""), atc = null;
@@ -7672,7 +7690,7 @@ function mapaDados(filtroTipo, pessoa){
     total++;
     if (!r.sf){ semSf++; return; }
     var s = mapaSetorDe(r);
-    if (!s){ var k = String(r.sf).trim(); foraMapa[k] = (foraMapa[k]||0)+1; return; }
+    if (!s){ var k = String(r.sf).trim() + (mapaAtcDe(r.atcp) ? " · ATC "+mapaAtcDe(r.atcp) : ""); foraMapa[k] = (foraMapa[k]||0)+1; return; }
     comSet++;
     var e = porSet[s.id] || (porSet[s.id] = { s:s, os:0, prod:0, pessoas:{}, tipos:{}, res:{} });
     var rs = mapaRes(r); e.res[rs] = (e.res[rs]||0)+1;
@@ -7781,7 +7799,7 @@ function mapaPainelEdicao(selS, D){
   var semN = MAPA_SETORES.setores.filter(function(s){ return !s.ns.length; }).length;
   var cab = '<div class="mp-sd-h"><b>Corrigir setores</b><span>clique num setor do mapa para mudar o número dele · '+fmtInt(nEd)+' correção(ões) salva(s)</span></div>';
   var lista = '<div class="mp-sec">SF da planilha sem setor no mapa</div>'
-    + (fora.length ? '<div class="mp-fora">'+fora.slice(0, 40).map(function(k){ return '<button type="button" data-fora="'+esc(String(k).replace(/\D+/g," ").trim().split(" ").pop())+'">'+esc(k)+' <em>'+fmtInt(D.foraMapa[k])+'</em></button>'; }).join("")+'</div>' : '<div class="mp-vz">Todos os SF das OS deste período já batem com algum setor.</div>')
+    + (fora.length ? '<div class="mp-fora">'+fora.slice(0, 40).map(function(k){ var p2 = String(k).split(" · ATC "), nn = (p2[0].match(/\d+/g) || [""]).pop(); return '<button type="button" data-fora="'+esc(nn)+'" data-fatc="'+esc(p2[1]||"")+'">'+esc(k)+' <em>'+fmtInt(D.foraMapa[k])+'</em></button>'; }).join("")+'</div>' : '<div class="mp-vz">Todos os SF das OS deste período já batem com algum setor.</div>')
     + '<div class="mp-vz">'+fmtInt(semN)+' setor(es) do mapa sem número — aparecem tracejados.</div>';
   if (!selS) return cab + lista + (nEd ? '<button type="button" class="btn btn-sm btn-ghost" id="mpEdZera" style="margin-top:8px">Desfazer todas as correções</button>' : '');
   var orig = selS._ns0.length ? selS._ns0.join(", ") : "sem número";
@@ -7799,7 +7817,7 @@ function mapaEdicaoEventos(el, selS, rerender){
     if (ns===null) delete ed[selS.id]; else ed[selS.id] = { ns:ns, atc:atc };
     saveSettings(); MAPA.idx = null; rerender();
   };
-  el.querySelectorAll("[data-fora]").forEach(function(b){ b.onclick = function(){ var i = document.getElementById("mpEdN"); if (i){ i.value = b.dataset.fora; i.focus(); } else A.toast("Clique primeiro no setor do mapa que é o "+b.dataset.fora+".", "ok"); }; });
+  el.querySelectorAll("[data-fora]").forEach(function(b){ b.onclick = function(){ var i = document.getElementById("mpEdN"); if (i){ i.value = b.dataset.fora; var sa = document.getElementById("mpEdA"); if (sa && b.dataset.fatc) sa.value = b.dataset.fatc; i.focus(); } else A.toast("Clique primeiro no setor do mapa que é o "+b.dataset.fora+".", "ok"); }; });
   var z = document.getElementById("mpEdZera"); if (z) z.onclick = function(){ if (!confirm("Desfazer todas as correções de setores?")) return; SETTINGS.mapaEdit = {}; saveSettings(); MAPA.idx = null; rerender(); };
   if (!selS) return;
   var ok = function(){
