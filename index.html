@@ -4448,6 +4448,7 @@ var UI = {
   rankingSort: "pct",
   comparTab: "bases",
   resTipo: "",
+  resAtc: "",
   itin: { dia:"", pessoa:"" },
   comparEmployeeB: "",
   perfil: "", duplaForm: false,
@@ -8260,21 +8261,59 @@ function estadoDoResultado(resultado, key){
 var SEM_TIPO = "(sem tipo)";
 function tipoDe(r){ return r.tipo ? titleCase(r.tipo) : SEM_TIPO; }
 function tipoKey(r){ return r.tipo ? up(r.tipo) : SEM_TIPO; }
-function tiposStats(f){
-  return A.memo("tipos|"+A.fkey(f), function(){
+/* ATC da OS: coluna P da planilha (já lida na importação em r.atcp) */
+var SEM_ATC = "(sem ATC)";
+function atcKey(r){
+  var raw = r.atcp ? String(r.atcp).trim() : "";
+  if (r._atcK===undefined || r._atcRaw!==raw){
+    var id = raw ? mapaAtcDe(raw) : "";
+    r._atcRaw = raw;
+    r._atcK = id ? id : (raw ? up(raw) : SEM_ATC);
+  }
+  return r._atcK;
+}
+function atcNome(k){
+  if (k===SEM_ATC) return SEM_ATC;
+  var a = MAPA_SETORES.atcs.filter(function(x){ return x.id===k; })[0];
+  return a ? "ATC "+a.id+" · "+a.nome : titleCase(k);
+}
+function atcStats(f, tipo){
+  tipo = tipo || "";
+  return A.memo("atcs|"+A.fkey(f)+"|"+tipo, function(){
     var m = {};
     A.filterRecords(Object.assign({}, f, { incluirIgnorados:true })).forEach(function(r){
+      if (tipo && tipoKey(r)!==tipo) return;
+      var k = atcKey(r), e = m[k] || (m[k] = { key:k, nome:atcNome(k), total:0, P:0 });
+      e.total++; if (r._cls==="P") e.P++;
+    });
+    return Object.keys(m).map(function(k){ return m[k]; }).sort(function(a,b){
+      if (a.key===SEM_ATC) return 1;
+      if (b.key===SEM_ATC) return -1;
+      return b.total-a.total;
+    });
+  });
+}
+function tiposStats(f, atc){
+  atc = atc || "";
+  return A.memo("tipos|"+A.fkey(f)+"|"+atc, function(){
+    var m = {};
+    var recsT = A.filterRecords(Object.assign({}, f, { incluirIgnorados:true }));
+    if (atc) recsT = recsT.filter(function(r){ return atcKey(r)===atc; });
+    recsT.forEach(function(r){
       var k = tipoKey(r), e = m[k] || (m[k] = { key:k, nome:tipoDe(r), total:0, P:0, N:0, X:0 });
       e.total++; e[r._cls]++;
     });
     return Object.keys(m).map(function(k){ return m[k]; }).sort(function(a,b){ return b.total-a.total; });
   });
 }
-function resultadoStats(f, tipo){
-  if (tipo===undefined) tipo = UI.resTipo || "";
-  return A.memo("resStats|"+A.fkey(f)+"|"+tipo, function(){
+function resultadoStats(f, tipo, atc){
+  /* chamado sem argumentos (tela Resultados das OS) usa os filtros da tela; com tipo explícito (ex.: relatório Excel) não aplica ATC */
+  if (tipo===undefined){ tipo = UI.resTipo || ""; if (atc===undefined) atc = UI.resAtc || ""; }
+  atc = atc || "";
+  return A.memo("resStats|"+A.fkey(f)+"|"+tipo+"|"+atc, function(){
     var recs = A.filterRecords(Object.assign({}, f, { incluirIgnorados:true }));
     if (tipo) recs = recs.filter(function(r){ return tipoKey(r)===tipo; });
+    if (atc) recs = recs.filter(function(r){ return atcKey(r)===atc; });
     var map = new Map();
     recs.forEach(function(r){
       var k = r._rk;
@@ -8322,7 +8361,7 @@ function limparDias(){
 }
 
 function tiposCard(f){
-  var ts = tiposStats(f);
+  var ts = tiposStats(f, UI.resAtc || "");
   var semTipo = ts.filter(function(t){ return t.key===SEM_TIPO; })[0];
   var total = ts.reduce(function(a,t){ return a+t.total; }, 0);
   var tudoSem = semTipo && semTipo.total===total;
@@ -8358,20 +8397,21 @@ function exportarResultadosOSCSV(f){
   var busca = UI.resBusca ? up(UI.resBusca) : "";
   var recs = A.filterRecords(Object.assign({}, f, { incluirIgnorados:true })).filter(function(r){
     if (UI.resTipo && tipoKey(r)!==UI.resTipo) return false;
+    if (UI.resAtc && atcKey(r)!==UI.resAtc) return false;
     if (UI.resClasse && UI.resClasse!=="todos" && r._cls!==UI.resClasse) return false;
     if (busca && up(r.resultado).indexOf(busca)===-1) return false;
     return true;
   }).sort(function(a,b){ return (a._t||0)-(b._t||0); });
   var q = function(v){ return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'; };
   var NOME = { P:"Produtiva", N:"Nao produtiva", X:"Ignorada" };
-  var linhas = [["Numero OS","Tipo de OS","Resultado","Classificacao","Colaborador","Base do colaborador","Regiao da OS","Unidade","Inicio","Fim"].join(";")];
+  var linhas = [["Numero OS","Tipo de OS","Resultado","Classificacao","Colaborador","Base do colaborador","Regiao da OS","Unidade","Inicio","Fim","ATC"].join(";")];
   recs.forEach(function(r){
     linhas.push([q(r.numOS), q(r.tipo?titleCase(r.tipo):""), q(r.resultado), NOME[r._cls]||"", q(titleCase(r.equipe)), q(r._area), q(r._areaExec), q(r.unidade),
-      r.dataInicio?fmtDateTimeBR(r.dataInicio):"", r.dataFim?fmtDateTimeBR(r.dataFim):""].join(";"));
+      r.dataInicio?fmtDateTimeBR(r.dataInicio):"", r.dataFim?fmtDateTimeBR(r.dataFim):"", q(r.atcp||"")].join(";"));
   });
   var blob = new Blob(["\ufeff"+linhas.join("\r\n")], { type:"text/csv;charset=utf-8;" });
   var url = URL.createObjectURL(blob), a = document.createElement("a");
-  a.href = url; a.download = "os-detalhadas" + (UI.resTipo ? "-"+UI.resTipo.toLowerCase().replace(/[^a-z0-9]+/gi,"-") : "") + "-" + dateToISO(new Date()) + ".csv";
+  a.href = url; a.download = "os-detalhadas" + (UI.resTipo ? "-"+UI.resTipo.toLowerCase().replace(/[^a-z0-9]+/gi,"-") : "") + (UI.resAtc ? "-atc-"+String(UI.resAtc).toLowerCase().replace(/[^a-z0-9]+/gi,"-") : "") + "-" + dateToISO(new Date()) + ".csv";
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(function(){ URL.revokeObjectURL(url); }, 1200);
   A.toast("CSV gerado com "+fmtInt(recs.length)+" OS.", "ok");
@@ -8386,6 +8426,11 @@ function renderResultados(){
   var top = lista[0];
   var bases = basesComDados();
   var filtradas = resFiltradas(lista);
+  var atcs = atcStats(f, UI.resTipo || "");
+  var temAtc = atcs.some(function(a){ return a.key!==SEM_ATC; });
+  var atcOpts = '<option value="">Todas as ATCs</option>' + atcs.map(function(a){
+      return '<option value="'+esc(a.key)+'"'+(UI.resAtc===a.key?" selected":"")+'>'+esc(a.nome)+' ('+fmtInt(a.total)+')</option>'; }).join("")
+    + ((UI.resAtc && !atcs.some(function(a){ return a.key===UI.resAtc; })) ? '<option value="'+esc(UI.resAtc)+'" selected>'+esc(atcNome(UI.resAtc))+' (0)</option>' : "");
 
   if (UI.resSelecionado && !lista.some(function(r){ return r.key===UI.resSelecionado; })) UI.resSelecionado = "";
   if (!UI.resSelecionado && filtradas.length) UI.resSelecionado = filtradas[0].key;
@@ -8398,8 +8443,10 @@ function renderResultados(){
         + '<button class="btn btn-sm" data-atalho="30">30 dias</button>'
         + '<button class="btn btn-sm" id="resMesInteiro">Mês inteiro</button>'
       + '</div></div>'
-      + '<div class="note" style="align-self:center;margin-left:auto;">'+IC('calendar','i-sm')+' '+esc(periodLabel())+' · '+esc(STATE.filters.base)+'</div>'
+      + '<div class="field"><label>ATC</label><select id="resAtcSel" title="ATC da OS (coluna P da planilha)" style="min-width:200px;">'+atcOpts+'</select></div>'
+      + '<div class="note" style="align-self:center;margin-left:auto;">'+IC('calendar','i-sm')+' '+esc(periodLabel())+' · '+esc(STATE.filters.base)+(UI.resAtc ? ' · '+esc(atcNome(UI.resAtc)) : '')+'</div>'
     + '</div>'
+    + ((!temAtc && atcs.length) ? '<div class="note" style="margin:-4px 0 12px;">'+IC('alert','i-sm')+' As OS salvas ainda não têm a ATC (coluna P). Reimporte as planilhas de Execução em <b>Importar Planilhas</b>: o painel não duplica nada, só completa a ATC.</div>' : '')
 
     + tiposCard(f)
     + '<div class="grid grid-kpi">'
@@ -8487,6 +8534,8 @@ function renderResultados(){
   });
   var tSel = document.getElementById("resTipoSel");
   if (tSel) tSel.addEventListener("change", function(e){ UI.resTipo = e.target.value; UI.resSelecionado = ""; renderResultados(); });
+  var aSel = document.getElementById("resAtcSel");
+  if (aSel) aSel.addEventListener("change", function(e){ UI.resAtc = e.target.value; UI.resSelecionado = ""; renderResultados(); });
 
   /* um único ouvinte para a tabela inteira (mais leve do que um por linha) */
   document.getElementById("resOsBody").addEventListener("click", function(e){
@@ -8624,7 +8673,7 @@ function renderResDetalhe(lista, f){
     return chartStacked(w, { height:220, labels:labels, series:[{ name:RES_NOMES[r.estado], color:RES_CORES[r.estado], data:valores }] });
   });
   host.querySelectorAll("[data-fres]").forEach(function(el){
-    el.addEventListener("click", function(){ openEmployeeOS(el.getAttribute("data-employee"), { resultado: el.getAttribute("data-fres"), tipo: UI.resTipo||"" }); });
+    el.addEventListener("click", function(){ openEmployeeOS(el.getAttribute("data-employee"), { resultado: el.getAttribute("data-fres"), tipo: UI.resTipo||"", atc: UI.resAtc||"" }); });
   });
   var btn = document.getElementById("resIrConfig");
   if (btn) btn.addEventListener("click", function(){ UI.configTab = "resultados"; switchPage("config"); });
@@ -8649,7 +8698,7 @@ function exportarResultadosCSV(rows, bases, totalGeral){
   var url = URL.createObjectURL(blob);
   var a = document.createElement("a");
   a.href = url;
-  a.download = "resultados-os" + (UI.resTipo ? "-"+UI.resTipo.toLowerCase().replace(/[^a-z0-9]+/gi,"-") : "") + "-" + dateToISO(new Date()) + ".csv";
+  a.download = "resultados-os" + (UI.resTipo ? "-"+UI.resTipo.toLowerCase().replace(/[^a-z0-9]+/gi,"-") : "") + (UI.resAtc ? "-atc-"+String(UI.resAtc).toLowerCase().replace(/[^a-z0-9]+/gi,"-") : "") + "-" + dateToISO(new Date()) + ".csv";
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(function(){ URL.revokeObjectURL(url); }, 1200);
   A.toast("CSV gerado com "+fmtInt(rows.length)+" resultado(s).", "ok");
@@ -10205,7 +10254,7 @@ function durTxt(min){
 function openEmployeeOS(name, opts){
   if (!name) return;
   opts = opts || {};
-  OSP = { name: up(name), aba:"lista", classe:"todas", busca:"", regiao:"", tipo: opts.tipo||"", resultado: opts.resultado||"",
+  OSP = { name: up(name), aba:"lista", classe:"todas", busca:"", regiao:"", tipo: opts.tipo||"", atc: opts.atc||"", resultado: opts.resultado||"",
           de: opts.dia||"", ate: opts.dia||"", sort:"t", dir:-1, limite:OSP_PASSO };
   closeEmployeeOS(true);
   var back = document.createElement("div");
@@ -10247,6 +10296,7 @@ function osFiltra(lista, ignora){
     if (ignora!=="regiao" && OSP.regiao && (r._areaExec||"Sem região")!==OSP.regiao) return false;
     if (ignora!=="resultado" && OSP.resultado && r._rk!==OSP.resultado) return false;
     if (ignora!=="tipo" && OSP.tipo && tipoKey(r)!==OSP.tipo) return false;
+    if (ignora!=="atc" && OSP.atc && atcKey(r)!==OSP.atc) return false;
     if ((OSP.de || OSP.ate) && !(r._t>=t0 && r._t<=t1)) return false;
     if (q && (up(r.numOS)+" "+up(r.resultado)+" "+up(r.unidade)+" "+up(r.tipo)).indexOf(q)===-1) return false;
     return true;
@@ -10269,7 +10319,7 @@ function osOrdena(rows){
     return d*(x-y);
   });
 }
-function osTemFiltro(){ return OSP.classe!=="todas" || OSP.busca || OSP.regiao || OSP.tipo || OSP.resultado || OSP.de || OSP.ate; }
+function osTemFiltro(){ return OSP.classe!=="todas" || OSP.busca || OSP.regiao || OSP.tipo || OSP.atc || OSP.resultado || OSP.de || OSP.ate; }
 
 function osMontar(){
   var box = document.getElementById("osModalBox"); if (!box) return;
@@ -10295,6 +10345,7 @@ function osMontar(){
       + '<div class="os-frow">'
         + '<div class="search-input-wrap" style="flex:1;min-width:180px;"><span class="sic">'+IC('search')+'</span><input type="search" id="osBusca" placeholder="Nº da OS, tipo, resultado ou unidade..."></div>'
         + '<select id="osTipo" title="Tipo de OS" style="max-width:220px;"></select>'
+        + '<select id="osAtc" title="ATC da OS" style="max-width:200px;"></select>'
         + '<select id="osRegiao" title="Região onde a OS foi feita"></select>'
         + '<select id="osResultado" title="Resultado" style="max-width:230px;"></select>'
         + '<label class="os-date">De <input type="date" id="osDe" min="'+minD+'" max="'+maxD+'"></label>'
@@ -10312,11 +10363,12 @@ function osMontar(){
   document.getElementById("osBusca").addEventListener("input", debounce(function(e){ OSP.busca = e.target.value; osAtualiza(true); }, 140));
   document.getElementById("osRegiao").addEventListener("change", function(e){ OSP.regiao = e.target.value; osAtualiza(true); });
   document.getElementById("osTipo").addEventListener("change", function(e){ OSP.tipo = e.target.value; osAtualiza(true); });
+  document.getElementById("osAtc").addEventListener("change", function(e){ OSP.atc = e.target.value; osAtualiza(true); });
   document.getElementById("osResultado").addEventListener("change", function(e){ OSP.resultado = e.target.value; osAtualiza(true); });
   document.getElementById("osDe").addEventListener("change", function(e){ OSP.de = e.target.value; if (OSP.ate && OSP.de>OSP.ate) OSP.ate = OSP.de; osAtualiza(true); });
   document.getElementById("osAte").addEventListener("change", function(e){ OSP.ate = e.target.value; if (OSP.de && OSP.ate<OSP.de) OSP.de = OSP.ate; osAtualiza(true); });
   document.getElementById("osLimpar").addEventListener("click", function(){
-    OSP.classe="todas"; OSP.busca=""; OSP.regiao=""; OSP.tipo=""; OSP.resultado=""; OSP.de=""; OSP.ate="";
+    OSP.classe="todas"; OSP.busca=""; OSP.regiao=""; OSP.tipo=""; OSP.atc=""; OSP.resultado=""; OSP.de=""; OSP.ate="";
     document.getElementById("osBusca").value = ""; osAtualiza(true);
   });
   document.getElementById("osAbas").addEventListener("click", function(e){ var b = e.target.closest("[data-aba]"); if (!b) return; OSP.aba = b.dataset.aba; osAtualiza(true); });
@@ -10381,6 +10433,12 @@ function osAtualiza(voltarAoTopo, manterScroll){
   if (OSP.tipo && !tpC[OSP.tipo]){ tpK.unshift(OSP.tipo); tpNome[OSP.tipo] = titleCase(OSP.tipo); }
   document.getElementById("osTipo").innerHTML = '<option value="">Todos os tipos de OS</option>'
     + tpK.map(function(k){ return '<option value="'+esc(k)+'"'+(OSP.tipo===k?" selected":"")+'>'+esc(tpNome[k])+' ('+fmtInt(tpC[k]||0)+')</option>'; }).join("");
+  var atC = {};
+  osFiltra(lista, "atc").forEach(function(r){ var k = atcKey(r); atC[k] = (atC[k]||0)+1; });
+  var atK = Object.keys(atC).sort(function(a,b){ if (a===SEM_ATC) return 1; if (b===SEM_ATC) return -1; return atC[b]-atC[a]; });
+  if (OSP.atc && !atC[OSP.atc]) atK.unshift(OSP.atc);
+  document.getElementById("osAtc").innerHTML = '<option value="">Todas as ATCs</option>'
+    + atK.map(function(k){ return '<option value="'+esc(k)+'"'+(OSP.atc===k?" selected":"")+'>'+esc(atcNome(k))+' ('+fmtInt(atC[k]||0)+')</option>'; }).join("");
   var reC = {}, reNome = {};
   osFiltra(lista, "resultado").forEach(function(r){ reC[r._rk] = (reC[r._rk]||0)+1; reNome[r._rk] = r.resultado||"(vazio)"; });
   var reK = Object.keys(reC).sort(function(a,b){ return reC[b]-reC[a]; });
